@@ -1,0 +1,57 @@
+generated: '2026-08-26'
+method: searched
+source: https://developer.sensehq.com/
+docs: https://developer.sensehq.com/
+summary:
+  types:
+  - http
+  - oauth2
+  oauth2_flows:
+  - clientCredentials
+  model: OAuth 2.0 client credentials exchanged for a short-lived bearer JWT; no scopes.
+  credential_issuance: manual — "The Sense Team will provide you with credentials that will
+    synchronize data to your account at your-agency-name.sensehq.com." There is no self-serve
+    key or client registration surface.
+schemes:
+- name: sense_authentication
+  type: oauth2
+  flows:
+  - flow: clientCredentials
+    tokenUrl: https://partner-auth.us-stage.sensehq.co/oauth2/token
+    tokenUrl_production: https://partner-auth.sensehq.com/oauth2/token
+    tokenUrl_note: The securitySchemes block in the published OpenAPI declares the STAGE token
+      endpoint (partner-auth.us-stage.sensehq.co). The production token endpoint
+      (partner-auth.sensehq.com/oauth2/token) is the one used in every sample-code block in the
+      same document's info.description. Recorded as published; not corrected in the spec.
+    scopes: 1
+    grant_types:
+    - client_credentials
+  sources:
+  - openapi/sense-talent-labs-sense-api-openapi.json
+  - https://developer.sensehq.com/
+- name: sense_bearer_auth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  applied: default security for every operation except POST /oauth2/token
+  sources:
+  - openapi/sense-talent-labs-sense-api-openapi.json
+token:
+  lifetime_seconds: 300
+  lifetime_source: expires_in field in the token response
+  caching_required: true
+  caching_policy: 'Clients MUST cache and reuse access tokens until they expire. The docs
+    explicitly warn against hardcoding the 300-second lifetime because it may change without
+    notice, and state that unnecessary token requests "may lead to rate limiting or
+    deactivation."'
+  response_fields:
+  - access_token
+  - expires_in
+  - token_type
+request:
+  header: 'Authorization: Bearer <access_token>'
+  token_request_content_type: application/x-www-form-urlencoded
+  token_request_fields:
+  - client_id
+  - client_secret
+  - grant_type

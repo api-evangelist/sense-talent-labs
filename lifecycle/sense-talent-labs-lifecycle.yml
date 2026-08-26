@@ -1,0 +1,62 @@
+generated: '2026-08-26'
+method: searched
+source: https://developer.sensehq.com/
+versioning:
+  style: URI path
+  current: v1
+  base: https://partner-api.sensehq.com/v1
+  policy_published: false
+  note: No written versioning policy. The path carries v1 and no other version has ever been
+    announced in the changelog.
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: 'No deprecation policy, no Sunset or Deprecation response headers (RFC 8594), and no
+    operation in the contract is marked deprecated. Sense has nonetheless shipped five breaking
+    changes since 2021 (recorded in changelog/sense-talent-labs-changelog.yml) — including field
+    renames on the Write-back API and a 2023-03-15 change from silently ignoring unknown fields to
+    rejecting them with 400 — and announced each only as a dated changelog line, with no advance
+    notice period, no overlap window, and no machine-readable signal. An integrator or agent has
+    no way to detect a pending breaking change from the API itself.'
+status_page:
+  published: true
+  url: https://status.sensehq.com/
+  platform: Atlassian Statuspage
+  page_id: cgdyx9ngg81k
+  machine_readable: true
+  api: https://status.sensehq.com/api/v2/summary.json
+  probed:
+  - url: https://status.sensehq.com/
+    status: 200
+  - url: https://status.sensehq.com/api/v2/summary.json
+    status: 200
+  components_observed:
+  - Web Portal
+  note: The status page exposes the standard Statuspage v2 JSON API (summary.json, status.json,
+    components.json, incidents.json), which is a genuine machine-readable operational signal an
+    agent can poll.
+sla:
+  published: false
+  note: No public SLA, uptime commitment, or support-response target. Commercial terms are in the
+    Sense Subscriber Agreement (https://www.sensehq.com/sense-subscriber-agreement), not published
+    as an API SLA.
+support:
+  url: https://www.sensehq.com/support
+  portal: https://support.sensehq.co/hc/en-us
+  portal_note: The support portal returned HTTP 403 to an ordinary crawler on 2026-08-26; it is
+    linked from the site footer and reachable in a browser.
+  security_contact: security@sensehq.com
+  general_contact: info@sensehq.com
+changelog:
+  published: true
+  detail: changelog/sense-talent-labs-changelog.yml
+  url: https://developer.sensehq.com/
+maturity:
+  stage: generally available
+  access: partner / customer only — credentials are issued manually by the Sense team, there is no
+    self-serve signup or sandbox key
+  first_documented_change: '2021-07-16'
+  latest_documented_change: '2026-04-02'

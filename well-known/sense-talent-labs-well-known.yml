@@ -1,0 +1,87 @@
+generated: '2026-08-26'
+method: probed
+source: live probes of every apis.yml and OpenAPI servers[] host
+hit_count: 0
+hosts:
+- host: https://partner-api.sensehq.com
+  role: production API base (apis.yml baseURL)
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  note: Returns a clean JSON 404 ({"message":"Not Found"}) for every path — a genuine negative, not
+    a catch-all.
+- host: https://partner-auth.sensehq.com
+  role: production OAuth token host
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+  - path: /.well-known/openid-configuration
+    status: 403
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+  - path: /.well-known/api-catalog
+    status: 403
+  - path: /.well-known/agent-card.json
+    status: 403
+  - path: /.well-known/agent.json
+    status: 403
+  note: 'Returns {"message":"Missing Authentication Token"} with HTTP 403 for every unmatched
+    path — the AWS API Gateway default for a route that is not configured. Not a document, and not
+    evidence of a gated document; the route simply does not exist. Notably this means the OAuth
+    authorization server publishes NO RFC 8414 metadata and NO OIDC discovery document, so a client
+    cannot discover the token endpoint programmatically.'
+- host: https://developer.sensehq.com
+  role: developer portal / API reference
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+  - path: /.well-known/openid-configuration
+    status: 403
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+  - path: /.well-known/api-catalog
+    status: 403
+  - path: /.well-known/agent-card.json
+    status: 403
+  - path: /.well-known/agent.json
+    status: 403
+  - path: /llms.txt
+    status: 403
+  note: Returns an S3 AccessDenied XML body for every missing key — the portal is a static site
+    served from an S3 origin. A genuine negative.
+- host: https://www.sensehq.com
+  role: corporate website
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /llms.txt
+    status: 404
+  note: 'Webflow-hosted. The /.well-known/* paths return a purpose-built 88-byte 404 body
+    ("Invalid .well-known request"), confirming a real negative rather than an SPA catch-all;
+    /llms.txt returns the standard 85 KB Webflow 404 page.'
+summary: 'No /.well-known document is served on any Sense host. Every probe returned 404 or 403
+  and nothing was saved, so NO WellKnown and NO SecurityTxt pointer is emitted for this provider.
+  This file records a verified absence, not a surface.'
+notable_gap: 'partner-auth.sensehq.com is a live OAuth 2.0 authorization server that publishes
+  neither RFC 8414 oauth-authorization-server metadata nor an openid-configuration document. The
+  token endpoint is discoverable only by reading prose in a 3.6 MB Redoc page.'

@@ -1,0 +1,37 @@
+generated: '2026-08-26'
+method: searched
+source: https://developer.sensehq.com/
+published_sandbox: false
+self_serve: false
+summary: 'Sense publishes no self-serve sandbox, no test tenant, no test credentials, and no
+  documented fixture or trigger tooling. A staging environment demonstrably exists — the published
+  OpenAPI ships it as the ONLY entry in servers[] — but it is not documented anywhere as a sandbox
+  an integrator may use, and no way to obtain credentials for it is published.'
+environments:
+- name: stage
+  host: https://partner-api.us-stage.sensehq.co
+  token_endpoint: https://partner-auth.us-stage.sensehq.co/oauth2/token
+  source: 'openapi/sense-talent-labs-sense-api-openapi.json — servers[0] and the
+    sense_authentication clientCredentials tokenUrl'
+  documented_as_sandbox: false
+  credentials_published: false
+  note: 'This host is present in the contract by what looks like a publishing accident rather than
+    by design — the spec was generated against staging and shipped that way, while every prose
+    example in the same document uses production. It is recorded here because it is the only
+    non-production environment Sense exposes any evidence of, not because Sense offers it for
+    testing.'
+- name: production
+  host: https://partner-api.sensehq.com/v1
+  token_endpoint: https://partner-auth.sensehq.com/oauth2/token
+  source: https://developer.sensehq.com/
+  documented_as_sandbox: false
+test_credentials: none published
+test_data: none published
+key_prefixes: none — credentials are OAuth client_id/client_secret pairs with no documented
+  test-vs-live prefix or mode flag
+time_simulation: none published
+gap: 'There is no way for a prospective integrator to exercise this API before signing. Credentials
+  are issued manually by the Sense team to an existing agency tenant, so evaluation, contract
+  testing and agent rehearsal all require a commercial relationship first. Combined with the
+  absence of a dry-run mode (see conventions/), the first call a client ever makes against Sense
+  is a real write to a real tenant.'

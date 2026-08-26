@@ -1,0 +1,59 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.sensehq.com/security
+trust_center:
+  url: https://trust.warden-ai.com/sense/candidate-matching
+  operator: Warden AI Ltd.
+  kind: third-party AI assurance dashboard
+  linked_from: https://www.sensehq.com/security
+  note: Sense does not operate a first-party trust center at trust.sensehq.com (probed 2026-08-26,
+    HTTP 404). The published trust surface is a third-party AI assurance dashboard operated by
+    Warden AI covering the Sense Candidate Matching system, linked from Sense's own security page
+    and from the site footer badge "Warden Assured".
+certifications: []
+certifications_note: 'IMPORTANT ATTRIBUTION CORRECTION. The Sense security page names PCI DSS,
+  SOC 1/2/3, ITAR, EU-US and NIST, but the sentence attributes them to its HOSTING PROVIDER, not
+  to Sense: "Our services are hosted on Amazon Web Services (AWS) cloud, compliant with PCI DSS,
+  SOC 1/2/3, ITAR, EU-US, and NIST." Those are AWS certifications. Sense publishes NO
+  certification of its own — no Sense SOC 2 report, ISO 27001 certificate, or equivalent is named
+  anywhere on the public site. An AICPA SOC badge appears in the site footer imagery but no Sense
+  report, audit period, or auditor is named alongside it. Recording these as Sense certifications
+  would misattribute its vendor''s compliance posture to Sense.'
+regulatory_assurance:
+- regime: NYC Local Law 144 (automated employment decision tools bias audit)
+  scope: Sense Candidate Matching
+  source: https://trust.warden-ai.com/sense/candidate-matching
+- regime: EU AI Act (Regulation 2024/1689)
+  scope: Sense Candidate Matching
+  source: https://trust.warden-ai.com/sense/candidate-matching
+- regime: Colorado SB 205
+  scope: Sense Candidate Matching
+  source: https://trust.warden-ai.com/sense/candidate-matching
+- regime: California FEHA (Fair Employment and Housing Act)
+  scope: Sense Candidate Matching
+  source: https://trust.warden-ai.com/sense/candidate-matching
+bias_audit:
+  auditor: Warden AI Ltd.
+  system: Candidate Matching
+  cadence: monthly
+  latest_review: '2026-05-18'
+  categories_assessed: 15
+  result: all 15 bias categories reported "Clear"
+  profiles_covered: 111408
+  source: https://trust.warden-ai.com/sense/candidate-matching
+security_practices:
+- practice: encryption in transit
+  detail: TLS for application data over the internet via the dashboard or APIs
+  source: https://www.sensehq.com/security
+- practice: encryption at rest
+  detail: AES-256
+  source: https://www.sensehq.com/security
+- practice: penetration testing
+  detail: annual vulnerability and penetration assessments
+  source: https://www.sensehq.com/security
+- practice: multi-factor authentication
+  detail: MFA / 2FA configurable through the in-product admin panel
+  source: https://www.sensehq.com/security
+- practice: subprocessor disclosure
+  detail: published subprocessor list
+  source: https://www.sensehq.com/legal/subprocessors

@@ -1,0 +1,76 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.sensehq.com/sense-pricing
+docs: https://www.sensehq.com/sense-pricing
+currency: USD
+billing_period: monthly
+pricing_model: published floor pricing ("starting at") with quote-based final pricing
+plan_count: 6
+plans:
+- name: Sense Platform for Talent Acquisition
+  price: 7000
+  price_display: Starting at $7,000/month
+  currency: USD
+  billing_period: monthly
+  quota: not published
+  overage: not published
+  limits: not published
+  cta: Request a Quote
+- name: Sense Platform for Staffing Teams
+  price: 2000
+  price_display: Starting at $2,000/month
+  currency: USD
+  billing_period: monthly
+  quota: not published
+  overage: not published
+  limits: not published
+  cta: Request a Quote
+- name: Sense Platform for Enterprise Staffing
+  price: 2000
+  price_display: Starting at $2,000/month
+  currency: USD
+  billing_period: monthly
+  quota: not published
+  overage: not published
+  limits: not published
+  cta: Request a Quote
+- name: Sense AI Recruiter
+  price: 3000
+  price_display: Starting at $3,000/month
+  currency: USD
+  billing_period: monthly
+  quota: not published
+  overage: not published
+  limits: not published
+  cta: Request a Quote
+- name: Sense SMS/WhatsApp Messaging
+  price: 500
+  price_display: Starting at $500/month
+  currency: USD
+  billing_period: monthly
+  quota: not published
+  overage: not published
+  limits: not published
+  cta: Request a Quote
+- name: Sense Interview Scheduling
+  price: 500
+  price_display: Starting at $500/month
+  currency: USD
+  billing_period: monthly
+  quota: not published
+  overage: not published
+  limits: not published
+  cta: Request a Quote
+api_pricing:
+  metered: false
+  separate_sku: false
+  note: 'The Sense API is not priced or sold separately. It is a partner data-synchronization
+    surface included with the platform, and access requires credentials issued manually by the
+    Sense team. No per-call, per-record or per-seat API price is published, and there is no free
+    tier or trial that reaches the API.'
+free_tier: none
+observations: 'Sense publishes real floor prices, which is more than most enterprise HR-tech
+  vendors do — the entry point is $500/month for a point product and $7,000/month for the
+  enterprise talent-acquisition platform. What is not published is anything an integrator can size
+  against: no seat counts, no message or record volumes, no overage rate, and no statement of what
+  changes between the $2,000 staffing tier and the identically priced enterprise staffing tier.'

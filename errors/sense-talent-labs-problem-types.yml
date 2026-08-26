@@ -1,0 +1,106 @@
+generated: '2026-08-26'
+method: derived
+source: openapi/sense-talent-labs-sense-api-openapi.json
+enriched_from: https://developer.sensehq.com/
+format: custom-json
+rfc9457: false
+content_type: application/json
+envelope:
+  description: 'Validation failures return a two-list envelope. Both lists carry the same item
+    shape, so a client must read `errors` to decide success and may read `warnings` for
+    non-fatal issues on an otherwise accepted batch.'
+  fields:
+  - name: errors
+    type: array
+    nullable: true
+    item_fields:
+    - name: entity_id
+      type: string
+      nullable: true
+      description: entity id which has validation errors if available
+    - name: message
+      type: string
+      nullable: true
+      description: description of validation error
+    - name: path
+      type: array of string
+      nullable: true
+      description: path to the entity which has validation errors
+  - name: warnings
+    type: array
+    nullable: true
+    item_fields:
+    - name: entity_id
+      type: string
+      nullable: true
+    - name: message
+      type: string
+      nullable: true
+    - name: path
+      type: array of string
+      nullable: true
+problem_types:
+- status: 400
+  title: Invalid request
+  occurrences: 51
+  schema: 400_response_schema
+  variants:
+  - Invalid request.
+  - Invalid request payload.
+  - Invalid request. Message will indicate which field failed validation.
+  - Invalid request. The file may be missing, unsupported, or exceed the size limit.
+  causes:
+  - a field failed validation
+  - an unknown or invalid field was present in the payload (rejected since 2023-03-15; previously
+    ignored silently)
+  - a datetime value could not be parsed as ISO 8601
+  - resume upload missing a required field, in an unsupported format, or over 4 MB
+  remediation: 'Read errors[].path and errors[].entity_id to locate the offending entity within
+    the batch, correct the field, and re-POST. Because POST is a whole-entity UPSERT, the corrected
+    replay is safe to retry.'
+  retryable: false
+- status: 404
+  title: Entity not found
+  occurrences: 10
+  schema: 404_response_schema
+  variants:
+  - Candidate not found.
+  - Placement not found.
+  - JobOrder not found.
+  - Company not found.
+  - ClientContact not found.
+  - InternalUser not found.
+  - Submission not found.
+  - Certification not found.
+  - Appointment not found.
+  - Lead not found.
+  causes:
+  - the id does not exist in this tenant
+  - 'the entity was written but has not finished async processing yet — writes return 201 on
+    enqueue and the docs allow roughly 30 minutes before data is visible'
+  remediation: 'Do not treat a 404 immediately after a write as a failed write. Confirm the id
+    matches the caller-side id used on the POST, and allow for the documented async processing
+    delay before retrying the read.'
+  retryable: conditionally
+  applies_to: GET /{entity}/{id} only
+- status: 413
+  title: Payload too large
+  occurrences: 20
+  schema: 400_response_schema
+  causes:
+  - batch exceeded 500 entities
+  - batch exceeded 256 KB after compression
+  remediation: Split the batch and resend. The contract declares maxItems 500 on every batch
+    requestBody, so a client can enforce the item limit before sending; the 256 KB compressed
+    limit must be measured at send time.
+  retryable: true
+  note: 413 reuses 400_response_schema rather than declaring its own shape.
+gaps:
+- No 401 or 403 response is declared anywhere in the contract, despite every operation requiring a
+  bearer token. An expired or revoked token produces an undocumented status and body.
+- No 429 response is declared, despite the docs warning that excessive token requests may lead to
+  rate limiting or deactivation.
+- No 5xx response is declared on any operation.
+- 'No error code registry exists: errors are free-text `message` strings with no stable machine-
+  readable code, so a client cannot branch on error type without string matching.'
+- Errors are not RFC 9457 application/problem+json.

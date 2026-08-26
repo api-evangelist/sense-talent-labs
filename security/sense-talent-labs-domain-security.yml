@@ -1,0 +1,29 @@
+generated: '2026-08-26'
+method: probed
+source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
+hosts:
+- host: www.sensehq.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov 10 00:56:21 2026 GMT
+  hsts: true
+  hsts_max_age: 31536000
+- host: developer.sensehq.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Feb  8 23:59:59 2027 GMT
+  hsts: false
+- host: partner-api.sensehq.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Dec 23 23:59:59 2026 GMT
+  hsts: null
+domains:
+- domain: sensehq.com
+  dnssec: false
+  caa:
+  - 0 issuewild "letsencrypt.org"
+  - 0 issuewild "amazontrust.com"
+  spf: true
+  dmarc: true
+  dmarc_policy: quarantine

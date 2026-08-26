@@ -1,18 +1,74 @@
 aid: sense-talent-labs
 name: Sense Talent Labs
-description: 'Sense Talent Labs is a company surfaced via the API Evangelist harvest backlog (source:
-  secondary-market) and added to the network as a stub for full-pipeline profiling.'
+description: 'Sense Talent Labs, operating as Sense (sensehq.com), is an AI-powered talent
+  engagement and recruiting automation platform founded in 2016 and used by staffing firms
+  and enterprise talent-acquisition teams. The product suite spans recruiting automation,
+  a talent CRM, campaigns and journeys, candidate scoring and matching, an AI recruiter and
+  chatbot, SMS/WhatsApp messaging, interview scheduling and referrals. Sense publishes a
+  public partner-facing REST API — the Sense API — documented as an OpenAPI 3.0.2 definition
+  at developer.sensehq.com, which synchronizes applicant-tracking-system data (candidates,
+  job orders, placements, submissions, companies, client contacts, internal users, appointments,
+  certifications and leads) into the Sense platform to drive workflow automation. A companion
+  Write-back API specification defines the event payloads Sense pushes back out to a customer
+  or ATS endpoint.'
+image: https://cdn.prod.website-files.com/613f2494a7d5cd1817022b81/6193a3272e0a012eb26f998c_Fav-256.png
 url: https://raw.githubusercontent.com/api-evangelist/sense-talent-labs/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-26'
 modified: '2026-08-26'
 tags:
-- Company
-apis: []
+- Human Resources
+- Recruiting
+- Talent Acquisition
+- Staffing
+- Applicant Tracking
+- Candidate Engagement
+- Recruiting Automation
+- Talent CRM
+- Messaging
+- Interview Scheduling
+- Artificial Intelligence
+- SaaS
+apis:
+- aid: sense-talent-labs-sense-api
+  name: Sense API
+  description: 'The Sense partner REST API used to synchronize applicant-tracking-system data
+    into the Sense Talent Engagement Platform. It exposes batch upsert, single-entity fetch,
+    partial update and dropdown possible-values management across ten entity types (Candidate,
+    Placement, InternalUser, JobOrder, Company, ClientContact, Appointment, Submission,
+    Certification, Lead), plus candidate resume upload. All POST operations are UPSERT
+    operations keyed on the caller-supplied id, batched up to 500 records or 256 KB compressed.
+    Authentication is OAuth 2.0 client credentials issuing a short-lived bearer JWT.'
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - Recruiting
+  - Applicant Tracking
+  - Candidate
+  - Job Order
+  - Placement
+  - Data Synchronization
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-sense-api-openapi.json
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
+  - type: Overlay
+    url: overlays/sense-talent-labs-sense-api-overlay.yaml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -20,4 +76,67 @@ maintainers:
   email: info@apis.io
 common:
 - type: Website
-  url: https://forgeglobal.com/sense-talent-labs_stock/
+  url: https://www.sensehq.com/
+- type: DeveloperPortal
+  url: https://developer.sensehq.com/
+- type: Documentation
+  url: https://developer.sensehq.com/
+- type: APIReference
+  url: https://developer.sensehq.com/
+- type: Blog
+  url: https://www.sensehq.com/blog
+- type: Support
+  url: https://www.sensehq.com/support
+- type: Pricing
+  url: https://www.sensehq.com/sense-pricing
+- type: TermsOfService
+  url: https://www.sensehq.com/terms-and-conditions
+- type: PrivacyPolicy
+  url: https://www.sensehq.com/privacy-policy
+- type: StatusPage
+  url: https://status.sensehq.com/
+- type: Security
+  url: https://www.sensehq.com/security
+- type: Compliance
+  url: security/sense-talent-labs-trust-center.yml
+- type: TrustCenter
+  url: https://trust.warden-ai.com/sense/candidate-matching
+- type: VulnerabilityDisclosure
+  url: security/sense-talent-labs-vulnerability-disclosure.yml
+- type: Lifecycle
+  url: lifecycle/sense-talent-labs-lifecycle.yml
+- type: ChangeLog
+  url: changelog/sense-talent-labs-changelog.yml
+- type: Conventions
+  url: conventions/sense-talent-labs-conventions.yml
+- type: Idempotency
+  url: conventions/sense-talent-labs-conventions.yml
+- type: Authentication
+  url: authentication/sense-talent-labs-authentication.yml
+- type: OAuthScopes
+  url: scopes/sense-talent-labs-scopes.yml
+- type: Conformance
+  url: conformance/sense-talent-labs-conformance.yml
+- type: ErrorCatalog
+  url: errors/sense-talent-labs-problem-types.yml
+- type: DataModel
+  url: data-model/sense-talent-labs-data-model.yml
+- type: Webhooks
+  url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+- type: Plans
+  url: plans/sense-talent-labs-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/sense-talent-labs-rate-limits.yml
+- type: Packages
+  url: packages/sense-talent-labs-packages.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/sense-talent-labs-llms.txt
+- type: DomainSecurity
+  url: security/sense-talent-labs-domain-security.yml
+x-enrichment:
+  date: '2026-08-26'
+  status: enriched
+  artifacts_added: 26
+  pass: local-v1

@@ -1,0 +1,143 @@
+generated: '2026-08-26'
+method: searched
+source: https://developer.sensehq.com/
+derived_from: openapi/sense-talent-labs-sense-api-openapi.json
+auth:
+  style: OAuth 2.0 client credentials -> bearer JWT
+  header: 'Authorization: Bearer <access_token>'
+  token_lifetime_seconds: 300
+  detail: authentication/sense-talent-labs-authentication.yml
+idempotency:
+  supported: true
+  mechanism: upsert-on-natural-key
+  header: none
+  detail: 'Sense does not use an Idempotency-Key header. Instead every POST is documented as an
+    UPSERT keyed on the caller-supplied `id` field, which is the identifier from the caller''s
+    own system and is explicitly NOT managed by Sense ("This represents the ID in your system and
+    is not managed by Sense"). Replaying the same POST body therefore converges on the same state
+    rather than creating duplicates, which gives the write path natural idempotency for a retrying
+    client or agent.'
+  caveat: 'UPSERT is whole-entity REPLACE, not merge. The docs state "The expectation is that you
+    provide the complete entity, and it will be created or updated (i.e. replacing the content for
+    an existing id). Take care that all fields are provided." A partial POST replay is therefore
+    idempotent but LOSSY — omitted fields are cleared, not preserved. Use PATCH /{entity}/{id} for
+    partial updates, where "Only fields present in the request body are updated; omitted fields
+    retain their current values."'
+  scope: per-entity, per-tenant
+  retention: not published
+  quote: Currently, all API POST methods are treated as UPSERT operations.
+  source: https://developer.sensehq.com/
+reversibility:
+  grade: documented
+  applicable: true
+  summary: 'A reversal path exists for deletes and for erroneous writes, but Sense publishes no
+    window for either, so this grades `documented` rather than `verified`.'
+  surfaces:
+  - operation: soft delete
+    operation_ids:
+    - post_candidates
+    - post_placements
+    - post_job-orders
+    - post_companies
+    - post_client-contacts
+    - post_internal-users
+    - post_submissions
+    - post_certifications
+    - post_appointments
+    - post_leads
+    write: 'DELETE is expressed as a field, not a method: "A soft DELETE Operation is supported if
+      the entity payload is sent with the field `is_deleted = true`."'
+    reversal: not documented. Because the delete is soft and is carried as an ordinary entity
+      field on an UPSERT, re-sending the entity is the only candidate reversal path, but Sense
+      does not document setting is_deleted back to false as a supported restore, and names no
+      restore operation.
+    window: not published
+    source: https://developer.sensehq.com/
+  - operation: erroneous write correction
+    reversal: 'Re-POST the correct complete entity under the same id. Because POST is a
+      whole-entity UPSERT, a corrected replay overwrites the bad state.'
+    window: not published
+    caveat: This is a correction path, not an undo — there is no version history, no
+      point-in-time restore, and no operation that returns an entity to a prior state.
+    source: https://developer.sensehq.com/
+  no_hard_delete: true
+  note: There is no DELETE HTTP method anywhere in the contract. Every one of the 52 operations is
+    GET, POST, PATCH or PUT.
+dry_run_mode:
+  supported: false
+  note: No dry-run, validate-only, preview or simulation parameter is published. The nearest
+    rehearsal surface is the stage environment named in the spec's servers[] block
+    (partner-api.us-stage.sensehq.co) — see sandbox/sense-talent-labs-sandbox.yml.
+pagination:
+  supported: false
+  note: 'The API has no list/collection GET operations. Reads are single-entity only
+    (GET /{entity}/{id}), so there is no pagination surface. Bulk movement of data is
+    write-direction (batch POST) rather than read-direction.'
+batching:
+  supported: true
+  style: JSON array request body
+  max_items: 500
+  max_payload: 256 KB after compression
+  spec_enforcement: requestBody schema declares maxItems 500, minItems 1
+  exhaustion_status: 413
+  source: https://developer.sensehq.com/
+field_expansion:
+  supported: false
+sparse_fields:
+  supported: false
+metadata:
+  supported: true
+  style: custom fields
+  detail: Entities carry provider-defined custom field slots — custom_text1 through custom_text34,
+    plus a custom_array type accepting an array of strings, added 2024-07-25.
+request_id_tracing:
+  supported: false
+  note: No request-id or correlation-id header is documented in the contract or the docs.
+versioning:
+  style: URI path
+  current: v1
+  base: https://partner-api.sensehq.com/v1
+  spec_version_field: 'info.version is EMPTY in the published OpenAPI — the document declares no
+    version string of its own.'
+  writeback_versioning: 'The Write-back API versions each event payload independently via a
+    `version` field, documented as: major revisions (>= 1) are breaking, minor revisions (< 1) are
+    non-breaking.'
+error_envelope:
+  format: custom JSON (not RFC 9457 problem+json)
+  content_type: application/json
+  shape:
+    errors:
+    - entity_id: id of the entity with validation errors, nullable
+      message: description of the validation error, nullable
+      path: array of strings pointing at the entity with validation errors, nullable
+    warnings: same shape as errors
+  strictness: 'Since 2023-03-15 unknown or invalid fields return 400 with field-level error
+    detail; previously unrecognized fields were silently ignored.'
+  detail: errors/sense-talent-labs-problem-types.yml
+rate_limit_signaling:
+  headers_published: false
+  note: No X-RateLimit-*, RateLimit-* or Retry-After header is documented. Rate limiting is
+    described only as a consequence of token-endpoint abuse. See
+    rate-limits/sense-talent-labs-rate-limits.yml.
+  retry_guidance: exponential backoff, recommended in the docs for transient failures
+async_processing:
+  model: accept-then-enqueue
+  detail: 'Writes return 201 "Request accepted for async processing" — the 201 confirms enqueue,
+    not persistence. The docs state data should be expected visible in the Sense product roughly
+    30 minutes after the call for Change Event processes.'
+  read_after_write: not consistent — an agent must not read back an entity immediately after
+    writing it and treat absence as failure.
+  source: https://developer.sensehq.com/
+referential_integrity:
+  model: caller-ordered
+  detail: 'Foreign keys are caller-supplied ids with no server-side ordering guarantee. The docs
+    prescribe an explicit sync order to avoid referencing an unprocessed key: internal-users,
+    candidates, client-contacts, companies, job-orders, submissions, placements, leads,
+    certifications, appointments.'
+  source: https://developer.sensehq.com/
+datetime:
+  format: ISO 8601
+  strictness: an unparseable datetime is rejected with 400 Bad Request
+  examples:
+  - '2020-04-01T10:30:00+0000'
+  - '2020-04-01T10:30:00-0700'

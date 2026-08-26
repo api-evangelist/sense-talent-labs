@@ -1,0 +1,223 @@
+generated: '2026-08-26'
+method: derived
+source: openapi/sense-talent-labs-sense-api-openapi.json
+enriched_from: https://developer.sensehq.com/
+summary: 'Ten entity types modelling a staffing/recruiting book of business. Identity is
+  caller-owned: every `id` is the primary key from the CALLER''s system (an ATS), explicitly not
+  managed by Sense, and every relationship is a caller-supplied string reference rather than a
+  server-issued key. There are no $ref links between entity schemas — the graph is expressed
+  entirely through `*_id` reference fields — so referential integrity is the caller''s
+  responsibility and the docs prescribe a fixed sync order to avoid dangling keys.'
+identity:
+  key_field: id
+  type: string
+  owner: caller
+  quote: This represents the ID in your system and is not managed by Sense.
+  id_prefixes: none — ids are opaque caller strings with no Sense-side prefix or format
+sync_order:
+- internal-users
+- candidates
+- client-contacts
+- companies
+- job-orders
+- submissions
+- placements
+- leads
+- certifications
+- appointments
+sync_order_rationale: To prevent referencing a foreign key that has not been processed yet.
+entities:
+- name: InternalUser
+  description: An internal person at your organization.
+  path: /internal-users
+  property_count: 116
+  relationships: []
+  note: The only entity with no outbound references, which is why it is synced first.
+- name: Candidate
+  description: A person seeking a job.
+  path: /candidates
+  property_count: 185
+  relationships:
+  - type: belongs_to
+    target: InternalUser
+    via: internal_user_id
+  sub_resources:
+  - path: /candidates/{id}/resume
+    operation: post_candidates_resume
+    description: resume upload, multipart/form-data, max 4 MB
+- name: ClientContact
+  description: A contact person at a Company.
+  path: /client-contacts
+  property_count: 164
+  relationships:
+  - type: belongs_to
+    target: Company
+    via: company_id
+  - type: belongs_to
+    target: InternalUser
+    via: internal_user_id
+- name: Company
+  description: A company that is a client of your organization.
+  path: /companies
+  property_count: 106
+  relationships:
+  - type: belongs_to
+    target: ClientContact
+    via: client_contact_id
+  - type: belongs_to
+    target: InternalUser
+    via: internal_user_id
+  note: 'Company and ClientContact reference each other, so the graph contains a cycle. The
+    prescribed sync order resolves it by writing client-contacts before companies.'
+- name: JobOrder
+  description: A job to be filled by a Candidate.
+  path: /job-orders
+  property_count: 122
+  relationships:
+  - type: belongs_to
+    target: Company
+    via: company_id
+  - type: belongs_to
+    target: ClientContact
+    via: client_contact_id
+  - type: belongs_to
+    target: InternalUser
+    via: internal_user_id
+- name: Submission
+  description: Sending a Candidate's info for additional review.
+  path: /submissions
+  property_count: 108
+  relationships:
+  - type: belongs_to
+    target: Candidate
+    via: candidate_id
+  - type: belongs_to
+    target: JobOrder
+    via: job_order_id
+  - type: belongs_to
+    target: Company
+    via: company_id
+  - type: belongs_to
+    target: ClientContact
+    via: client_contact_id
+  - type: belongs_to
+    target: InternalUser
+    via: internal_user_id
+  - type: belongs_to
+    target: InternalUser
+    via: owner_id
+  - type: belongs_to
+    target: InternalUser
+    via: sending_user_id
+- name: Placement
+  description: A job that has been filled by a Candidate.
+  path: /placements
+  property_count: 158
+  relationships:
+  - type: belongs_to
+    target: Candidate
+    via: candidate_id
+  - type: belongs_to
+    target: JobOrder
+    via: job_order_id
+  - type: belongs_to
+    target: Submission
+    via: submission_id
+  - type: belongs_to
+    target: Company
+    via: company_id
+  - type: belongs_to
+    target: ClientContact
+    via: client_contact_id
+  - type: belongs_to
+    target: InternalUser
+    via: internal_user_id
+  note: The join at the centre of the model — it is the only entity referencing Submission, and it
+    closes the candidate-to-job loop.
+- name: Lead
+  description: A new prospective client or contact.
+  path: /leads
+  property_count: 144
+  relationships:
+  - type: belongs_to
+    target: Company
+    via: company_id
+  - type: belongs_to
+    target: InternalUser
+    via: internal_user_id
+  - type: belongs_to
+    target: InternalUser
+    via: owner_id
+- name: Certification
+  description: The credential and or certificate of Candidate, or as required by a Job.
+  path: /certifications
+  property_count: 106
+  relationships:
+  - type: belongs_to
+    target: Candidate
+    via: candidate_id
+  - type: belongs_to
+    target: JobOrder
+    via: job_order_id
+  - type: belongs_to
+    target: Placement
+    via: placement_id
+- name: Appointment
+  description: An interview or a meeting with a Candidate or Contact.
+  path: /appointments
+  property_count: 115
+  relationships:
+  - type: belongs_to
+    target: Candidate
+    via: candidate_id
+  - type: belongs_to
+    target: JobOrder
+    via: job_order_id
+  - type: belongs_to
+    target: Placement
+    via: placement_id
+  - type: belongs_to
+    target: ClientContact
+    via: client_contact_id
+  - type: belongs_to
+    target: InternalUser
+    via: internal_user_id
+  - type: belongs_to
+    target: InternalUser
+    via: owner_id
+  - type: belongs_to
+    target: Candidate
+    via: application_id
+    confidence: low
+    note: application_id is typed as a reference but no Application entity exists in the contract;
+      application_id was added to Candidate on 2023-11-16 as a plain string field.
+field_types:
+  id:
+    nullable: true
+    note: primary key from the caller's system, always a string
+  int: {nullable: true}
+  float: {nullable: true}
+  string: {nullable: true}
+  datetime:
+    nullable: true
+    format: ISO 8601
+    strict: an unparseable value rejects the update with 400
+  ref:
+    nullable: true
+    format: string
+    note: primary key reference to another entity
+custom_fields:
+  text_slots: custom_text1 through custom_text34
+  array_type: custom_array, an array of strings, added 2024-07-25
+  note: Custom field slots inflate every entity's property count substantially — Candidate carries
+    185 properties, of which a large share are numbered custom slots rather than domain fields.
+observations:
+  entity_count: 10
+  relationship_count: 34
+  nullability: 'Every field in every entity is nullable, including ids. The contract declares no
+    `required` array on any entity schema, so the spec alone cannot tell a client which fields
+    must be sent — the prose instruction "Take care that all fields are provided" carries that
+    requirement instead.'
+  cycles:
+  - Company <-> ClientContact
+  no_polymorphism: no oneOf/anyOf/discriminator anywhere in the schema set

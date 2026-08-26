@@ -1,0 +1,111 @@
+generated: '2026-08-26'
+method: searched
+source: https://developer.sensehq.com/
+docs: https://developer.sensehq.com/
+scheme: dated, newest-first, split by surface (Sense API and Write-back API)
+location: published inline in the OpenAPI info.description, rendered as a "Changelog" section of
+  the developer portal. There is no standalone changelog page, feed, or RSS.
+current_version: v1
+latest_entry: '2026-04-02'
+entries:
+- date: '2026-04-02'
+  surface: Sense API
+  breaking: false
+  additions:
+  - Added POST /v1/candidates/{id}/resume for uploading candidate resumes as multipart/form-data.
+  highlights: 'Required fields file, resume_id, file_extension, date_updated, date_created.
+    Supported formats pdf, doc, docx, txt, rtf, odt, html, htm. Maximum file size 4 MB.'
+- date: '2026-02-05'
+  surface: Sense API
+  breaking: false
+  additions:
+  - Added GET /v1/{entity}/possible-values/{fieldName} to retrieve configured dropdown values.
+  - Added PUT /v1/{entity}/possible-values/{fieldName} to set dropdown values.
+  highlights: PUT accepts an array of { label, value } objects where value is string, number or
+    boolean.
+- date: '2025-11-18'
+  surface: Write-back API
+  breaking: false
+  additions:
+  - SMS and WhatsApp note write-backs sent via Messaging workflows can configure the recipient
+    entity type and the note action type.
+  highlights: Disabled by default; must be enabled per agency.
+- date: '2025-05-21'
+  surface: Sense API
+  breaking: false
+  policy_change: true
+  highlights: 'Token caching made mandatory. Access tokens must be cached and reused until expiry,
+    read from expires_in rather than hardcoded. Unnecessary token requests may result in rate
+    limiting or access deactivation.'
+- date: '2025-02-19'
+  surface: Sense API
+  breaking: false
+  additions:
+  - Added GET /v1/{entity}/{id} to fetch a single entity by ID.
+  - Added PATCH /v1/{entity}/{id} for partial updates.
+  highlights: PATCH updates only fields present in the body; unlike POST it does not replace the
+    full entity.
+- date: '2024-07-25'
+  surface: Sense API
+  breaking: false
+  additions:
+  - Added the custom_array field type across all entity types, accepting an array of strings.
+- date: '2023-11-16'
+  surface: Sense API
+  breaking: false
+  additions:
+  - Added application_id (string) to the Candidate entity.
+  - Added custom_text16 through custom_text34.
+- date: '2023-06-12'
+  surface: Sense API
+  breaking: false
+  additions:
+  - Added Lead, Certification and Appointment as supported entity types.
+  highlights: 'Sync them after Placement in dependency order: leads, certifications, appointments.'
+- date: '2023-03-15'
+  surface: Sense API
+  breaking: true
+  highlights: 'Behavioral change. Payloads containing unknown or invalid fields now return 400 Bad
+    Request with field-level error details; previously unrecognized fields were silently ignored.'
+- date: '2023-02-21'
+  surface: Sense API
+  breaking: false
+  additions:
+  - Added datetime field support to the Submission entity, ISO 8601 format.
+- date: '2022-11-30'
+  surface: Write-back API
+  breaking: true
+  highlights: 'Renamed write-back types OBJECT_CREATE to ENTITY_CREATE, OBJECT_UPDATE to
+    ENTITY_UPDATE, OBJECT_DELETE to ENTITY_DELETE. Renamed object_type to entity_type in the
+    ENTITY_CREATE payload. ENTITY_CREATE responses must now include entity_id in addition to id.'
+- date: '2022-10-21'
+  surface: Write-back API
+  breaking: true
+  additions:
+  - Added ENTITY_CREATE, ENTITY_UPDATE and ENTITY_DELETE write-back types.
+  highlights: Removed the FIELD_UPDATE type.
+- date: '2022-02-11'
+  surface: Write-back API
+  breaking: true
+  highlights: 'Renamed CHATBOT_CONVERSATION to CHATBOT_RESPONSE_SUMMARY. Added is_broadcast
+    (boolean) to SMSObject. Renamed entity to sender in ConversationObject. Added subject
+    (EntityObject) to the Chatbot Conversation payload.'
+- date: '2021-07-21'
+  surface: Write-back API
+  breaking: false
+  additions:
+  - Added MESSAGING_DIGEST, CHATBOT_CONVERSATION, FIELD_UPDATE and GENERIC_EVENT write-back types.
+  - Added the FieldUpdateObject data structure.
+- date: '2021-07-16'
+  surface: Write-back API
+  breaking: true
+  highlights: Renamed the response ID field from note_id to id.
+observations:
+  entry_count: 15
+  span: 2021-07-16 to 2026-04-02
+  breaking_changes: 5
+  cadence: irregular, roughly two to three entries per year
+  quality: 'Unusually good for a partner API — every entry is dated, breaking changes are labelled
+    as such, and renamed fields are named on both sides of the rename. The weakness is
+    distribution, not content: the changelog is only reachable by reading a 3.6 MB Redoc page, has
+    no feed, and is not versioned or diffable.'

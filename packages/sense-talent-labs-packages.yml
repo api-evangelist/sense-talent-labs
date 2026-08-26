@@ -1,0 +1,38 @@
+generated: '2026-08-26'
+method: searched
+source: registry searches + https://developer.sensehq.com/
+package_count: 0
+official_count: 0
+packages: []
+registries_searched:
+- registry: npm
+  query: sensehq, sense-talent, sense-api
+  result: no first-party package. Matches returned (@sensehq/vue-plaid-link-next, unofficial-sense,
+    qliksense-api, @cochl/sense-api) belong to unrelated projects; @sensehq/vue-plaid-link-next is
+    a Plaid Link wrapper with no connection to this company's recruiting platform.
+- registry: PyPI
+  query: sensehq, sense-api, sense-talent
+  result: 404 — no package
+- registry: RubyGems
+  query: sensehq
+  result: 404 — no package
+- registry: Maven Central
+  result: no first-party artifact
+- registry: NuGet
+  result: no first-party package
+- registry: pkg.go.dev
+  result: no first-party module
+- registry: Packagist
+  result: no first-party package
+- registry: crates.io
+  result: no first-party crate
+source_code:
+  github_org: none
+  note: 'github.com/sensehq exists but is an unattributed account whose only public repository is
+    "gittest", last updated December 2014. Nothing links it to Sense Talent Labs and it publishes
+    no client library. No GitHubOrganization pointer is emitted.'
+finding: 'Sense ships no client libraries in any language. The published OpenAPI is offered as the
+  substitute: the docs tell integrators to "download the definition and create a client library
+  using the openapi-generator project." That is a defensible position for a partner-only sync API
+  with 52 operations, but it means every integrator generates and maintains their own client, and
+  there is no first-party SDK release cadence to read as a maintenance signal.'

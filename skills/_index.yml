@@ -1,0 +1,25 @@
+generated: '2026-08-26'
+method: generated
+source: openapi/sense-talent-labs-sense-api-openapi.json + https://developer.sensehq.com/
+api: Sense API
+skills:
+- name: sense-initial-ats-sync
+  file: sense-talent-labs-initial-ats-sync.md
+  description: Seed a Sense tenant with a full ATS data set for the first time, in the dependency
+    order Sense requires, using batch upserts.
+  operations: 10
+- name: sense-incremental-change-events
+  file: sense-talent-labs-incremental-change-events.md
+  description: Keep a Sense tenant current after the initial sync by flushing batched change
+    events, choosing correctly between destructive POST upserts and safe PATCH updates.
+  operations: 9
+- name: sense-receive-writebacks
+  file: sense-talent-labs-receive-writebacks.md
+  description: Build and operate the HTTP endpoint that receives Sense Write-back events, meeting
+    the published receiver requirements and response contract.
+  operations: 0
+  note: Covers the Write-back API, which is specified in prose rather than in the OpenAPI, so it
+    grounds on documented event types rather than operationIds.
+grounding: Every operationId referenced in these skills was verified against
+  openapi/sense-talent-labs-sense-api-openapi.json. No operation, parameter, or endpoint is
+  invented.

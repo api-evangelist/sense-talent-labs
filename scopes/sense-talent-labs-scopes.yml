@@ -1,0 +1,26 @@
+generated: '2026-08-26'
+method: searched
+source: https://developer.sensehq.com/
+docs: https://developer.sensehq.com/
+scheme: sense_authentication
+flow: clientCredentials
+scope_model: none
+scope_count: 0
+summary: 'The Sense API declares an OAuth 2.0 clientCredentials securityScheme but publishes no
+  scope vocabulary. The single entry in the spec''s scopes map is the literal placeholder "N/A"
+  with the description "The Sense API does not require a scope to be provided." Authorization is
+  therefore all-or-nothing per client credential: a credential is bound to one agency tenant
+  (your-agency-name.sensehq.com) and carries full read and write access to every entity type the
+  API exposes. There is no least-privilege or per-entity scoping surface available to an
+  integrator or an agent.'
+scopes:
+- scope: N/A
+  description: The Sense API does not require a scope to be provided.
+  verbatim: true
+  flows:
+  - clientCredentials
+  sources:
+  - openapi/sense-talent-labs-sense-api-openapi.json
+tenancy:
+  model: one credential per agency tenant
+  source: https://developer.sensehq.com/

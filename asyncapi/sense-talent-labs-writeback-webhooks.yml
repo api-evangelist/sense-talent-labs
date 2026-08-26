@@ -1,0 +1,164 @@
+generated: '2026-08-26'
+method: searched
+source: https://developer.sensehq.com/
+asyncapi_published: false
+asyncapi_note: Sense publishes no AsyncAPI document. The event surface is specified in prose as the
+  "Write-back API Specification" tag inside the same OpenAPI document that describes the REST API.
+surface: webhooks
+direction: outbound — Sense pushes events TO a customer-operated endpoint
+inversion_note: 'This is the reverse of a conventional webhook registration. Sense does not host a
+  subscription API; instead the CUSTOMER (or their ATS) must build and operate an HTTP endpoint
+  that meets a Sense-published conformance checklist, and Sense delivers events to that single
+  URL. The specification is therefore a set of requirements imposed on the receiver, not a catalog
+  of subscribable topics.'
+receiver_requirements:
+- API must support the RESTful paradigm
+- API should support some authentication and authorization mechanism
+- API must support encrypted transport via HTTPS
+- API must support SSL version TLSv1.2
+- API must accept JSON data payloads
+- API must emit proper status codes to communicate client or server errors, or successful
+  communication
+- API must return an id if the write-back is successfully received
+delivery:
+  method: POST
+  content_type: application/json
+  url_constraint: 'The endpoint URL must be static. It "cannot require any variable information to
+    be provided for each writeback" — a path template such as /event/{candidate_id} is explicitly
+    invalid. A fixed query-string key is allowed.'
+  success_criteria: HTTP 200 AND a body containing an `id`
+  failure_definition: 'Non-2xx responses, or 2xx responses without an id, are considered failures.'
+  retry: 'Sense will attempt re-delivery of any failed write-back. No retry count, backoff schedule
+    or dead-letter behaviour is published.'
+  ordering: not published
+  deduplication: not published — each write-back carries a unique `id`, which a receiver can use to
+    dedupe, but Sense does not state whether redelivery reuses it
+  signing: none — payloads are not signed; authenticity rests entirely on the pre-shared bearer
+    token or OAuth credential
+authentication:
+  supported:
+  - method: bearer token
+    detail: pre-shared key embedded in every request, placed either in the Authorization header or
+      as a query parameter, at the customer's choice. Rotatable at the customer's discretion.
+  - method: OpenID Connect
+    detail: the customer supplies Sense with a well-known OIDC URL in addition to the event URL
+  - method: OAuth 2.0
+    detail: 'the customer supplies an authentication URL, scope, client id and client secret.
+      Sense supports the CLIENT CREDENTIALS grant type only. Tokens are sent as Authorization:
+      Bearer.'
+envelope:
+  fields:
+  - name: id
+    type: string
+    description: unique Sense id for the write-back
+  - name: type
+    type: SenseWriteBackType
+    description: the write-back type, always set by Sense
+  - name: version
+    type: number
+    description: 'schema version for the write-back type. Major revisions (>= 1) are breaking;
+      minor revisions (< 1) are non-breaking.'
+  - name: created_date
+    type: string
+    format: ISO 8601
+    description: when the write-back was created in Sense
+  - name: data
+    type: object
+    description: event-specific payload, shape determined by `type`
+responses:
+  success:
+    status: 200
+    body: '{ "id": "<unique_id>" }'
+  auth_failure:
+    status: 401
+    body: '{ "error": "invalid token or session" }'
+  input_failure:
+    status: 4xx
+    body: '{ "error": "unable to store because of field x,y,z" }'
+  server_failure:
+    status: 5xx
+    body: '{ "error": "unable to store, server issue x,y,z" }'
+event_count: 10
+events:
+- type: ENGAGE_SENT_EVENT
+  version: 1.0
+  description: An outbound engagement touchpoint was sent to a candidate or contact.
+  payload_fields: [sms, email, summary, user_defined_data, associated_entities, sense_meta_data]
+- type: ENGAGE_EVENT_RESPONSE
+  version: 1.0
+  description: A candidate or contact responded to an engagement touchpoint, including survey
+    answers.
+  payload_fields: [sms, email, summary, survey_responses, user_defined_data, associated_entities,
+    sense_meta_data]
+- type: MESSAGING_INCOMING_MESSAGE
+  version: 1.1
+  description: An inbound SMS was received.
+  payload_fields: [sms, summary, user_defined_data, associated_entities, sense_meta_data]
+- type: MESSAGING_OUTGOING_MESSAGE
+  version: 1.1
+  description: An outbound SMS was sent.
+  payload_fields: [sms, summary, is_broadcast, user_defined_data, associated_entities,
+    sense_meta_data]
+- type: MESSAGING_DIGEST
+  version: 1.0
+  description: A rolled-up digest of messaging activity.
+  payload_fields: [sms, summary, user_defined_data, associated_entities, sense_meta_data]
+- type: CHATBOT_RESPONSE_SUMMARY
+  version: 1.0
+  description: A summary of a chatbot conversation. Renamed from CHATBOT_CONVERSATION on
+    2022-02-11.
+  payload_fields: [summary, subject, conversation, user_defined_data, entity]
+- type: ENTITY_CREATE
+  version: 1.0
+  description: An entity was created in Sense and should be created in the receiving system.
+  payload_fields: [entity_type, fields, user_defined_data, associated_entities, sense_meta_data]
+  response_requirement: 'The response MUST include entity_id, the id of the newly created entity,
+    in addition to id.'
+- type: ENTITY_UPDATE
+  version: 1.0
+  description: An entity was updated in Sense.
+  payload_fields: [entity, fields, user_defined_data, associated_entities, sense_meta_data]
+- type: ENTITY_DELETE
+  version: 1.0
+  description: An entity was deleted in Sense.
+  payload_fields: [entity, user_defined_data, associated_entities, sense_meta_data]
+- type: GENERIC_EVENT
+  version: 1.0
+  description: A catch-all event carrying a human-readable summary and a subject entity.
+  payload_fields: [summary, subject, user_defined_data, associated_entities, sense_meta_data]
+entity_types:
+- AE_APPOINTMENT
+- AE_CANDIDATE
+- AE_CERTIFICATION
+- AE_CLIENT_CONTACT
+- AE_COMPANY
+- AE_INTERNAL_USER
+- AE_JOB_ORDER
+- AE_PLACEMENT
+- AE_SUBMISSION
+data_structures:
+- name: EntityObject
+  fields: [id, type]
+- name: ActorObject
+  fields: [entity, email, phone]
+- name: SMSObject
+  fields: [to, from, body, date, direction, mms_urls, is_broadcast]
+- name: EmailObject
+  fields: [to, from, reply-to, bcc, cc, date, direction, is_alert_email, subject, body, mms_urls]
+- name: FieldObject
+  fields: [name, value]
+- name: ConversationObject
+  fields: [sender, is_bot, message, date]
+enablement:
+  self_serve: false
+  note: 'Write-backs are configured per agency by Sense, not by the customer. The 2025-11-18
+    changelog entry notes the newest messaging write-back options are "Disabled by default; must be
+    enabled per agency."'
+gaps:
+- No AsyncAPI, JSON Schema, or other machine-readable definition of any event payload — every
+  structure is published as an untyped pseudo-JSON code block in prose.
+- No payload signing or HMAC verification, so a receiver cannot cryptographically verify that a
+  write-back came from Sense.
+- No published retry schedule, backoff, attempt limit, or dead-letter behaviour.
+- No delivery-ordering or exactly-once guarantee.
+- No self-serve subscription management, event replay, or delivery log.

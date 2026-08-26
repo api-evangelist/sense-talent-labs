@@ -1,0 +1,64 @@
+generated: '2026-08-26'
+method: searched
+source: https://developer.sensehq.com/
+docs: https://developer.sensehq.com/
+limit_count: 3
+headers_published: false
+response_headers: []
+retry_after: false
+exhaustion_status:
+- code: 413
+  meaning: Payload too large — the batch exceeded the documented size or item limits.
+  documented: true
+- code: 429
+  meaning: not documented. Sense warns that excessive token requests "may lead to rate limiting or
+    deactivation" but never names the status code, header, or threshold that signals it.
+  documented: false
+limits:
+- name: batch item count
+  scope: per-request
+  limit: 500
+  unit: entities
+  window: n/a
+  enforcement: 'declared in the contract — requestBody schema sets maxItems 500, minItems 1 on
+    every batch POST'
+  exceeded: 413
+  source: https://developer.sensehq.com/
+- name: batch payload size
+  scope: per-request
+  limit: 256
+  unit: KB after compression
+  window: n/a
+  enforcement: documented in prose, not declared in the contract
+  exceeded: 413
+  source: https://developer.sensehq.com/
+- name: resume upload size
+  scope: per-request
+  limit: 4
+  unit: MB
+  window: n/a
+  operation: post_candidates_resume
+  enforcement: documented in prose
+  source: https://developer.sensehq.com/
+token_endpoint:
+  documented_limit: false
+  policy: 'Token caching is mandatory rather than advisory. The docs state clients MUST cache and
+    reuse the access token until expiry (300 s, read from expires_in), that the lifetime must not
+    be hardcoded because it may change without notice, and that "Avoid calling the token endpoint
+    unnecessarily — doing so may lead to rate limiting or deactivation." No numeric threshold is
+    given.'
+  enforcement_consequence: rate limiting or account deactivation
+  source: https://developer.sensehq.com/
+recommended_flush_policy:
+  detail: 'For the Change Event process the docs recommend flushing accumulated updates after 500
+    records, 256 KB compressed, or 5 minutes — whichever comes first.'
+  source: https://developer.sensehq.com/
+retry_guidance:
+  strategy: exponential backoff
+  scope: transient failures
+  source: https://developer.sensehq.com/
+gap: 'The runtime signal an agent actually needs is absent. Sense publishes request-shaping limits
+  (batch size, payload size, file size) and a strongly worded token-caching obligation whose
+  violation risks deactivation, but publishes no rate-limit response headers, no 429 contract, no
+  Retry-After, and no numeric request-per-window ceiling. A client cannot discover how close it is
+  to the limit that can get it deactivated.'

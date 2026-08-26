@@ -1,0 +1,111 @@
+generated: '2026-08-26'
+method: derived
+source: openapi/sense-talent-labs-sense-api-openapi.json
+status: candidate
+deployment:
+  mode: none
+  auth: unknown
+  verified: searched
+search_evidence:
+- target: official hosted/remote MCP server
+  result: none found
+  detail: No MCP server, endpoint, or npx/pip package is published by Sense. Searched the developer
+    portal, the corporate site, npm, PyPI and the web. Sense markets AI agents (AI Recruiter, AI
+    Interviewer, AI Receptionist, Voice AI) as end-user products, but exposes no MCP surface for
+    third-party agents.
+- target: /.well-known/agent-card.json and /.well-known/agent.json
+  result: 404/403 on every host
+  detail: see well-known/sense-talent-labs-well-known.yml
+- target: llms.txt tool list
+  result: not served
+note: 'mode: none — Sense ships no MCP server. The tools below are a CANDIDATE surface derived from
+  the published OpenAPI to show what an MCP server over this API would expose. They are not
+  offered by Sense, no endpoint exists, and no MCPServer pointer is wired into apis.yml. Do not
+  treat this list as an agent surface.'
+candidate_tools:
+- tool: sense_upsert_entity
+  category: write
+  rest:
+  - post_candidates
+  - post_placements
+  - post_job-orders
+  - post_companies
+  - post_client-contacts
+  - post_internal-users
+  - post_submissions
+  - post_certifications
+  - post_appointments
+  - post_leads
+  description: Batch upsert up to 500 entities of a given type. Whole-entity replace.
+  consequence: high — replaces existing records; omitted fields are cleared
+- tool: sense_get_entity
+  category: read
+  rest:
+  - get_candidates
+  - get_placements
+  - get_job-orders
+  - get_companies
+  - get_client-contacts
+  - get_internal-users
+  - get_submissions
+  - get_certifications
+  - get_appointments
+  - get_leads
+  description: Fetch a single entity by caller-supplied id.
+  consequence: none
+- tool: sense_patch_entity
+  category: write
+  rest:
+  - patch_candidates
+  - patch_placements
+  - patch_job-orders
+  - patch_companies
+  - patch_client-contacts
+  - patch_internal-users
+  - patch_submissions
+  - patch_certifications
+  - patch_appointments
+  - patch_leads
+  description: Partial update of a single entity; omitted fields retain their values.
+  consequence: medium
+- tool: sense_get_possible_values
+  category: read
+  rest:
+  - get_candidates_possible_values
+  - get_appointments_possible_values
+  - get_certifications_possible_values
+  - get_client-contacts_possible_values
+  - get_companies_possible_values
+  - get_internal-users_possible_values
+  - get_job-orders_possible_values
+  - get_leads_possible_values
+  - get_placements_possible_values
+  - get_submissions_possible_values
+  description: Retrieve configured dropdown values for a field.
+  consequence: none
+- tool: sense_set_possible_values
+  category: write
+  rest:
+  - put_candidates_possible_values
+  - put_appointments_possible_values
+  - put_certifications_possible_values
+  - put_client-contacts_possible_values
+  - put_companies_possible_values
+  - put_internal-users_possible_values
+  - put_job-orders_possible_values
+  - put_leads_possible_values
+  - put_placements_possible_values
+  - put_submissions_possible_values
+  description: Set the dropdown value list for a field. Tenant-wide configuration change.
+  consequence: high
+- tool: sense_upload_resume
+  category: write
+  rest:
+  - post_candidates_resume
+  description: Upload a candidate resume as multipart/form-data, max 4 MB.
+  consequence: medium
+agent_readiness_note: 'Even as a candidate this surface would be difficult to expose safely to an
+  agent. There is no scope model (a credential carries full read/write over every entity in the
+  tenant), no dry-run, no hard delete but also no documented restore, no list operations to
+  discover ids, and POST is a lossy whole-entity replace. An agent that upserts a partial candidate
+  record silently erases every field it omitted.'

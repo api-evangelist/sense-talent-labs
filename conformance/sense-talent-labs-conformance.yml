@@ -1,0 +1,116 @@
+generated: '2026-08-26'
+method: derived
+source: openapi/sense-talent-labs-sense-api-openapi.json
+enriched_from: https://developer.sensehq.com/
+standards:
+- id: openapi
+  name: OpenAPI Specification
+  conforms: true
+  version: 3.0.2
+  evidence: 'The provider publishes an OpenAPI 3.0.2 document describing 52 operations, rendered
+    at https://developer.sensehq.com/. The document itself states "Our API definition uses the
+    OpenAPI 3.0 specification. You can download the definition and create a client library using
+    the openapi-generator project."'
+- id: oauth2
+  name: OAuth 2.0 (RFC 6749)
+  conforms: true
+  profile: client credentials grant
+  evidence: 'components.securitySchemes.sense_authentication declares type oauth2 with a
+    clientCredentials flow and a tokenUrl. The docs link RFC 6749 section 1.5 directly and
+    document the standard access_token / expires_in / token_type response.'
+- id: bearer-token
+  name: OAuth 2.0 Bearer Token Usage (RFC 6750)
+  conforms: true
+  evidence: 'components.securitySchemes.sense_bearer_auth declares type http, scheme bearer,
+    bearerFormat JWT; applied as the default security requirement on every operation.'
+- id: oidc
+  name: OpenID Connect
+  conforms: partial
+  scope: write-back receiver only
+  evidence: 'The Write-back API specification offers OIDC as an authentication option for the
+    CUSTOMER-operated receiving endpoint ("a customer must provide Sense with a well-known OpenId
+    Connect URL"). Sense is the OIDC client in that direction. Sense itself publishes no
+    /.well-known/openid-configuration on any host (probed 2026-08-26, 404/403 on every host), so
+    it is not an OIDC provider.'
+- id: rfc9457
+  name: RFC 9457 Problem Details for HTTP APIs
+  conforms: false
+  evidence: 'Errors use a custom { errors[], warnings[] } envelope served as application/json.
+    No application/problem+json media type and no type/title/status/detail/instance members
+    appear anywhere in the contract.'
+- id: rfc8594
+  name: RFC 8594 Sunset HTTP Header
+  conforms: false
+  evidence: No Sunset or Deprecation header is documented and no operation is marked deprecated,
+    despite five breaking changes shipped since 2021.
+- id: rfc9116
+  name: RFC 9116 security.txt
+  conforms: false
+  evidence: 'Probed 2026-08-26: /.well-known/security.txt returned 404 on www.sensehq.com and
+    partner-api.sensehq.com, and 403 on developer.sensehq.com. A security contact
+    (security@sensehq.com) is published as prose on https://www.sensehq.com/security instead.'
+- id: idempotency-key
+  name: Idempotency-Key header (draft-ietf-httpapi-idempotency-key-header)
+  conforms: false
+  evidence: 'No Idempotency-Key header. Idempotency is achieved structurally instead, via
+    UPSERT on a caller-owned natural key — see conventions/sense-talent-labs-conventions.yml.'
+- id: pagination
+  name: Collection pagination
+  conforms: na
+  evidence: The API exposes no list or collection endpoints, so there is no pagination surface to
+    conform to. Reads are single-entity only.
+- id: iso8601
+  name: ISO 8601 date and time
+  conforms: true
+  evidence: 'The docs specify ISO 8601 for every datetime field with strict validation — "If a
+    datetime field is unable to be parsed in ISO 8601 format, the update is rejected and the API
+    will return a 400 Bad Request."'
+- id: rfc7231-http
+  name: HTTP semantics
+  conforms: partial
+  evidence: 'Correct use of GET/POST/PATCH/PUT and 400/404/413. Two deviations: batch writes
+    return 201 Created for an accept-and-enqueue result rather than 202 Accepted, and PATCH
+    returns 201 rather than 200. No 401, 403, 429 or 5xx response is declared anywhere in the
+    contract despite every operation being authenticated.'
+- id: json-schema
+  name: JSON Schema
+  conforms: partial
+  evidence: 'components.schemas defines 19 schemas reused by $ref across all 52 operations, but no
+    entity schema declares a `required` array and every property is nullable, so the schemas
+    cannot express what a valid request actually is.'
+domain_standards:
+- id: hr-open
+  name: HR Open Standards
+  conforms: false
+  evidence: 'No HR Open Standards namespace, schema reference, or message type appears anywhere in
+    the contract. Entity models (Candidate, JobOrder, Placement, Submission, ClientContact) are
+    Sense-proprietary shapes named after staffing-industry concepts, not HR Open types.'
+- id: scim
+  name: SCIM (RFC 7643/7644)
+  conforms: false
+  evidence: 'No urn:ietf:params:scim:schemas:* URN, no /Users or /Groups resource, no SCIM
+    filter/patch semantics. InternalUser is a Sense-proprietary entity, not a SCIM User.'
+- id: hr-xml
+  name: HR-XML
+  conforms: false
+  evidence: JSON-only contract; no HR-XML message types.
+- id: odata
+  name: OData
+  conforms: false
+  evidence: No $metadata endpoint and no OData query options.
+summary: 'Sense conforms to the general-purpose web-API standards it uses — OpenAPI 3.0.2,
+  OAuth 2.0 client credentials, bearer JWT, ISO 8601 — and to none of the interoperability
+  standards for its own market. This matters more here than in most sectors, because the API''s
+  entire purpose is syncing data out of applicant-tracking systems: Sense maintains bespoke
+  connectors for Bullhorn, Workday, iCIMS, Greenhouse, JobDiva, SAP SuccessFactors, Oracle Taleo,
+  Avionte, LaborEdge and Salesforce, and every ATS integrating with Sense must map its own model
+  onto Sense''s proprietary entity shapes. This is not a scored deficiency — measured 2026-08-17,
+  HR Open has zero detectable adoption across the whole catalog, so there is no de facto standard
+  to have adopted.'
+regulatory:
+  regime: AI in employment decisions
+  note: 'Sense is subject to automated-employment-decision-tool regulation rather than to a data-
+    interoperability regime. Third-party assurance against NYC Local Law 144, the EU AI Act
+    (Regulation 2024/1689), Colorado SB 205 and California FEHA is published for the Candidate
+    Matching system by Warden AI — see security/sense-talent-labs-trust-center.yml. That assurance
+    covers a model, not the API contract, and nothing in the contract itself declares it.'

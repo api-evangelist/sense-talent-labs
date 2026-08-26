@@ -1,0 +1,109 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Sense API
+  version: 1.0.0
+x-provenance:
+  generated: '2026-08-26'
+  method: generated
+  source: openapi/sense-talent-labs-sense-api-openapi.json
+  extends: openapi/sense-talent-labs-sense-api-openapi.json
+  note: 'Non-destructive enhancements only. The original document is preserved verbatim in
+    openapi/_original/. Every value added here is sourced from Sense''s own published
+    documentation at https://developer.sensehq.com/ — nothing is invented.'
+actions:
+- target: $.info
+  description: 'The published document declares an empty info.version. Set it to the URI path
+    version the API actually serves and which the docs use throughout.'
+  update:
+    version: v1
+- target: $.info
+  description: Add the contact channel published on https://www.sensehq.com/security and the terms
+    published in the site footer.
+  update:
+    contact:
+      name: Sense Talent Labs, Inc.
+      url: https://www.sensehq.com/support
+      email: security@sensehq.com
+    termsOfService: https://www.sensehq.com/terms-and-conditions
+- target: $.servers
+  description: >-
+    THE MOST CONSEQUENTIAL CORRECTION IN THIS OVERLAY. The published document ships exactly one
+    server, https://partner-api.us-stage.sensehq.co, which is a STAGING host. Every prose example
+    in the same document — the sync-order list and all three Python samples in info.description —
+    uses the production base https://partner-api.sensehq.com/v1. A client generated from the spec
+    as published points at staging and will not reach production. This action adds production as
+    the first server and relabels the existing entry as staging, without removing it.
+  update:
+  - url: https://partner-api.sensehq.com/v1
+    description: Production. Sourced from the sync-order list and the sample code in the
+      document's own info.description.
+  - url: https://partner-api.us-stage.sensehq.co
+    description: Staging. The only server declared in the published document. Not documented as a
+      customer-accessible sandbox and no credentials for it are published.
+- target: $.components.securitySchemes.sense_authentication.flows.clientCredentials
+  description: 'The declared tokenUrl is the staging authorization server. Production is
+    https://partner-auth.sensehq.com/oauth2/token, used in all three sample-code blocks.'
+  update:
+    x-token-url-production: https://partner-auth.sensehq.com/oauth2/token
+    x-token-lifetime-seconds: 300
+    x-token-caching-required: true
+    x-token-caching-note: Clients MUST cache and reuse the access token until expiry, reading the
+      lifetime from expires_in rather than hardcoding it. Unnecessary token requests may lead to
+      rate limiting or deactivation.
+- target: $.components.securitySchemes.sense_authentication.flows.clientCredentials.scopes
+  description: Annotate the placeholder scope so a generator does not emit "N/A" as a real scope
+    value.
+  update:
+    x-scope-model: none
+    x-authorization-note: The Sense API has no scope vocabulary. A credential is bound to one
+      agency tenant and carries full read and write access to every entity type.
+- target: $.paths.*.post
+  description: Record the batch limits that govern every write. maxItems is already declared in the
+    contract; the compressed payload ceiling and the 413 trigger are documented only in prose.
+  update:
+    x-batch-max-items: 500
+    x-batch-max-payload: 256 KB after compression
+    x-batch-exceeded-status: 413
+    x-write-semantics: upsert
+    x-upsert-note: Whole-entity replace keyed on the caller-supplied id. Omitted fields are
+      cleared, not preserved. Use PATCH for partial updates.
+    x-idempotent: true
+    x-idempotency-mechanism: upsert-on-natural-key
+- target: $.paths.*.post
+  description: Record the accept-then-enqueue semantics. A 201 confirms the batch was enqueued,
+    not that it was persisted or is visible.
+  update:
+    x-processing: async
+    x-visibility-delay: approximately 30 minutes for Change Event processes
+    x-read-after-write-consistent: false
+- target: $.info
+  description: 'Record the gaps an integrator must plan around. None of these responses is declared
+    anywhere in the published contract even though every operation is authenticated.'
+  update:
+    x-undeclared-responses:
+    - status: 401
+      note: no unauthorized response is declared on any operation despite bearer auth being
+        required everywhere
+    - status: 403
+      note: no forbidden response is declared
+    - status: 429
+      note: no rate-limit response is declared, though the docs warn that excessive token requests
+        may cause rate limiting or deactivation
+    - status: 5xx
+      note: no server-error response is declared on any operation
+    x-no-required-fields: Every entity schema omits a `required` array and marks every property
+      nullable, so the contract cannot express a valid request. The prose instruction "Take care
+      that all fields are provided" carries that requirement instead.
+    x-delete-semantics: 'Soft delete only. There is no DELETE method in the contract; deletion is
+      expressed by sending the entity with is_deleted = true.'
+    x-sync-order:
+    - internal-users
+    - candidates
+    - client-contacts
+    - companies
+    - job-orders
+    - submissions
+    - placements
+    - leads
+    - certifications
+    - appointments
