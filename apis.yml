@@ -32,35 +32,262 @@ tags:
 - Artificial Intelligence
 - SaaS
 apis:
-- aid: sense-talent-labs-sense-api
-  name: Sense API
-  description: 'The Sense partner REST API used to synchronize applicant-tracking-system data
-    into the Sense Talent Engagement Platform. It exposes batch upsert, single-entity fetch,
-    partial update and dropdown possible-values management across ten entity types (Candidate,
-    Placement, InternalUser, JobOrder, Company, ClientContact, Appointment, Submission,
-    Certification, Lead), plus candidate resume upload. All POST operations are UPSERT
-    operations keyed on the caller-supplied id, batched up to 500 records or 256 KB compressed.
-    Authentication is OAuth 2.0 client credentials issuing a short-lived bearer JWT.'
+- aid: sense-talent-labs:sense-talent-labs-appointment-api
+  name: Sense Talent Labs Appointment API
+  description: An interview or a meeting with a Candidate or Contact.
   humanURL: https://developer.sensehq.com/
   baseURL: https://partner-api.sensehq.com/v1
   tags:
-  - Recruiting
-  - Applicant Tracking
-  - Candidate
-  - Job Order
-  - Placement
-  - Data Synchronization
+  - Appointment
   properties:
   - type: OpenAPI
-    url: openapi/sense-talent-labs-sense-api-openapi.json
+    url: openapi/sense-talent-labs-appointment-api-openapi.yml
   - type: Documentation
     url: https://developer.sensehq.com/
   - type: APIReference
     url: https://developer.sensehq.com/
   - type: Authentication
     url: authentication/sense-talent-labs-authentication.yml
-  - type: Overlay
-    url: overlays/sense-talent-labs-sense-api-overlay.yaml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
+- aid: sense-talent-labs:sense-talent-labs-authentication-api
+  name: Sense Talent Labs Authentication API
+  description: Authenticate using client credentials to obtain a Bearer access_token.
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - Authentication
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-authentication-api-openapi.yml
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
+- aid: sense-talent-labs:sense-talent-labs-candidate-api
+  name: Sense Talent Labs Candidate API
+  description: A person seeking a job.
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - Candidate
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-candidate-api-openapi.yml
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
+- aid: sense-talent-labs:sense-talent-labs-certification-api
+  name: Sense Talent Labs Certification API
+  description: The credential and or certificate of Candidate, or as required by a Job.
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - Certification
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-certification-api-openapi.yml
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
+- aid: sense-talent-labs:sense-talent-labs-clientcontact-api
+  name: Sense Talent Labs Client Contact API
+  description: A contact person at a Company.
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - ClientContact
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-clientcontact-api-openapi.yml
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
+- aid: sense-talent-labs:sense-talent-labs-company-api
+  name: Sense Talent Labs Company API
+  description: A company that is a client of your organization.
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - Company
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-company-api-openapi.yml
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
+- aid: sense-talent-labs:sense-talent-labs-internaluser-api
+  name: Sense Talent Labs Internal User API
+  description: An internal person at your organization.
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - InternalUser
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-internaluser-api-openapi.yml
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
+- aid: sense-talent-labs:sense-talent-labs-joborder-api
+  name: Sense Talent Labs Job Order API
+  description: A job to be filled by a Candidate.
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - JobOrder
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-joborder-api-openapi.yml
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
+- aid: sense-talent-labs:sense-talent-labs-lead-api
+  name: Sense Talent Labs Lead API
+  description: A new prospective client or contact
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - Lead
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-lead-api-openapi.yml
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
+- aid: sense-talent-labs:sense-talent-labs-placement-api
+  name: Sense Talent Labs Placement API
+  description: A job that has been filled by a Candidate.
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - Placement
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-placement-api-openapi.yml
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
+  - type: ErrorCatalog
+    url: errors/sense-talent-labs-problem-types.yml
+  - type: DataModel
+    url: data-model/sense-talent-labs-data-model.yml
+  - type: Webhooks
+    url: asyncapi/sense-talent-labs-writeback-webhooks.yml
+  - type: RateLimits
+    url: rate-limits/sense-talent-labs-rate-limits.yml
+- aid: sense-talent-labs:sense-talent-labs-submission-api
+  name: Sense Talent Labs Submission API
+  description: Sending a Candidate’s info for additional review.
+  humanURL: https://developer.sensehq.com/
+  baseURL: https://partner-api.sensehq.com/v1
+  tags:
+  - Submission
+  properties:
+  - type: OpenAPI
+    url: openapi/sense-talent-labs-submission-api-openapi.yml
+  - type: Documentation
+    url: https://developer.sensehq.com/
+  - type: APIReference
+    url: https://developer.sensehq.com/
+  - type: Authentication
+    url: authentication/sense-talent-labs-authentication.yml
   - type: ErrorCatalog
     url: errors/sense-talent-labs-problem-types.yml
   - type: DataModel
@@ -75,6 +302,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/sense-talent-labs-sense-api-overlay.yaml
 - type: Website
   url: https://www.sensehq.com/
 - type: DeveloperPortal
