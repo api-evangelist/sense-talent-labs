@@ -1,0 +1,65 @@
+slug: sense-talent-labs
+provider: Sense Talent Labs
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Telecommunications
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 5
+edges:
+- tag: Candidate
+  spec_file: sense-talent-labs-candidate-api-openapi.yml
+  capability_id: BC-300.10
+  capability_id_l1: BC-300
+  capability_name: Talent Acquisition Management
+  confidence: 0.9
+  evidence: POST /candidates 'Upsert Candidate'; POST /candidates/{id}/resume 'Upload Candidate Resume'
+  reason: Candidate records and resume upload in a recruiting automation/ATS-sync platform plainly realise
+    sourcing and recruiting under Talent Acquisition Management.
+- tag: JobOrder
+  spec_file: sense-talent-labs-joborder-api-openapi.yml
+  capability_id: BC-300.10
+  capability_id_l1: BC-300
+  capability_name: Talent Acquisition Management
+  confidence: 0.8
+  evidence: POST /job-orders 'Upsert JobOrder'; 'Retrieve JobOrder details' synchronised from the ATS
+    to power 'Sense Workflows'
+  reason: Job orders are open requisitions/roles to be filled in a recruiting platform, squarely within
+    Talent Acquisition Management.
+- tag: Placement
+  spec_file: sense-talent-labs-placement-api-openapi.yml
+  capability_id: BC-300.10
+  capability_id_l1: BC-300
+  capability_name: Talent Acquisition Management
+  confidence: 0.75
+  evidence: POST /placements  post_placements  Upsert Placement; "synchronize your ATS data into the Sense
+    Platform"
+  reason: Placement is the staffing/ATS record of a candidate placed into a job, i.e. the hiring outcome
+    in the recruiting lifecycle, which realises Talent Acquisition Management. Some residual ambiguity
+    because the record is only synchronised, not created by hiring workflow here.
+- tag: Submission
+  spec_file: sense-talent-labs-submission-api-openapi.yml
+  capability_id: BC-300.10
+  capability_id_l1: BC-300
+  capability_name: Talent Acquisition Management
+  confidence: 0.75
+  evidence: POST /submissions  post_submissions  Upsert Submission; "synchronize your ATS data into the
+    Sense Platform"
+  reason: Submission is the ATS entity for submitting a candidate to a job requisition — part of the sourcing/recruiting
+    pipeline, mapping to Talent Acquisition Management for this recruiting-automation vendor.
+- tag: Appointment
+  spec_file: sense-talent-labs-appointment-api-openapi.yml
+  capability_id: BC-300.10
+  capability_id_l1: BC-300
+  capability_name: Talent Acquisition Management
+  confidence: 0.7
+  evidence: POST /appointments 'Upsert Appointment'; vendor suite includes 'interview scheduling' and
+    the API is used to 'synchronize your ATS data into the Sense Platform'
+  reason: Appointments in an ATS-sync recruiting platform represent interview/candidate meeting records,
+    part of the recruiting and hiring process under Talent Acquisition Management.
