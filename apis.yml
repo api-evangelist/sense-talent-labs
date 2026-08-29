@@ -11,6 +11,17 @@ description: 'Sense Talent Labs, operating as Sense (sensehq.com), is an AI-powe
   certifications and leads) into the Sense platform to drive workflow automation. A companion
   Write-back API specification defines the event payloads Sense pushes back out to a customer
   or ATS endpoint.'
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://cdn.prod.website-files.com/613f2494a7d5cd1817022b81/6193a3272e0a012eb26f998c_Fav-256.png
 url: https://raw.githubusercontent.com/api-evangelist/sense-talent-labs/refs/heads/main/apis.yml
 x-type: company
