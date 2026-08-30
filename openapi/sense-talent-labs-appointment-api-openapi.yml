@@ -1,0 +1,857 @@
+openapi: 3.2.0
+info:
+  description: "# Overview\n### Introduction\nUse the Sense API to synchronize your ATS data into the Sense Platform. The RESTFUL API is used to seed the initial set of entities and keep them up-to-date over time. Synchronizing data into Sense is what powers the automation of Sense Workflows. \n## API Client\nOur API definition uses the [OpenAPI 3.0](http://spec.openapis.org/oas/v3.0.3) specification. You can download the definition and create a client library using the [openapi-generator](https://openapi-generator.tech/) project.\n\n## Authorization\nAuthenticate to the Sense API using OAuth2 client credentials. The Sense Team will provide you with credentials that will synchronize data to your account at your-agency-name.sensehq.com.\n\n<SecurityDefinitions />\n\n## ⚠️ Token Caching & Rate Limits\n**IMPORTANT:** Clients **must** cache and reuse access tokens until they expire, as indicated by the `expires_in` field in the token response.\n\n### Sample Token Response\n```json\n{\n  \"access_token\": \"eyJr...\",\n  \"expires_in\": 300,\n  \"token_type\": \"Bearer\"\n}\n```\n\n## ✅ OAuth Token Best Practices\n\nTo ensure stable, efficient, and compliant integrations with the Sense API, follow these best practices:\n\n- **Cache the access token** securely and reuse it for all requests until it expires.\n- **Always respect the `expires_in` field** returned in the token response.  \n  > ⚠️ **Do not hardcode the expiry time** (e.g., 5 minutes). While the current token lifetime is 300 seconds (5 minutes), it may change in the future without notice. Your integration should dynamically honor the `expires_in` value provided.\n- Only request a new token **when the existing one is about to expire**.\n- Avoid calling the token endpoint unnecessarily — doing so may lead to rate limiting or deactivation.\n- Implement retry logic with exponential backoff in case of transient failures.\n- Monitor your integration for abnormal token request patterns.\n\nFollowing these practices ensures better reliability, reduces infrastructure strain, and prevents disruptions to your access.\n\n##  Helpful Resources for Token Caching\n\nDepending on your tech stack, here are some guides and libraries to help implement OAuth token caching:\n\n### General\n- [RFC 6749 - OAuth 2.0 Specification (Section 1.5)](https://datatracker.ietf.org/doc/html/rfc6749#section-1.5)\n- [Understanding OAuth Access Token Lifetime](https://www.oauth.com/oauth2-servers/access-tokens/access-token-lifetime/)\n\n### Node.js\n- [Simple OAuth2 Library (with built-in caching)](https://github.com/lelylan/simple-oauth2)\n\n### Python\n- [Requests-OAuthlib (with token storage example)](https://requests-oauthlib.readthedocs.io/en/latest/)\n\n### Java\n- [Spring Security OAuth2 (with in-memory token caching)](https://docs.spring.io/spring-security/reference/servlet/oauth2/index.html)\n- [Google HTTP Client Library for OAuth 2.0](https://github.com/googleapis/google-oauth-java-client)\n\n### Postman\n- [Postman Environment Variable Token Reuse Guide](https://learning.postman.com/docs/sending-requests/authorization/oauth-20/)\n\nImplement token caching early in your integration lifecycle to ensure your application is efficient and remains in good standing with Sense API rate limits.\n\n## Synchronizing Data\n\nTo synchronize data with Sense, we need the initial seed of entity data (Candidates, Placements, etc), and updates to those entities over time. To accomplish this, we recommend two processes named Sync and Change Event.\n\nWhen data is sent and accepted by the Sense API, the data is enqueued to be processed by Sense's background processes. You should expect data to be visible in the Sense product 30 minutes after your API call for Change Event processes.\n### Sync Process\n\nThe sync is generally a long running process that iterates over your entire data set and calls the Sense API. For example, to sync a database of 1 million candidates, POST to the /candidates endpoint in batches of 500 under 256 kb after compression.\n\n### Change Event Process\n\nTo keep the initial set of data up-to-date, the Change Event process can be implemented as a hook whenever your entities change. You can call the Sense API POST /candidates when any of the fields defined in the Candidate model change. To take advantage of batching (our API supports 500 updates at a time under 256 kb after compression), your Change Event process can flush changes to the Sense API after it accumulates 500 updates, exceeds 256 kb after compression or after 5 minutes, whichever comes first.\n\n### Sync Operation\n\n* Currently, all API POST methods are treated as UPSERT operations. The expectation is that you provide the complete entity, and it will be created or updated (i.e. replacing the content for an existing id). Take care that all fields are provided.\n* A soft DELETE Operation is supported if the entity payload is sent with the field `is_deleted = true`. \n* To prevent referencing a foreign key that has not been processed yet sync the following entities in this order: \n\n    * https://partner-api.sensehq.com/v1/internal-users\n    \n    * https://partner-api.sensehq.com/v1/candidates\n    \n    * https://partner-api.sensehq.com/v1/client-contacts\n    \n    * https://partner-api.sensehq.com/v1/companies\n    \n    * https://partner-api.sensehq.com/v1/job-orders\n    \n    * https://partner-api.sensehq.com/v1/submissions\n    \n    * https://partner-api.sensehq.com/v1/placements \n\n    * https://partner-api.sensehq.com/v1/leads \n\n    * https://partner-api.sensehq.com/v1/certifications\n\n    * https://partner-api.sensehq.com/v1/appointments\n\n### Considerations\n* Record the time the Sync Process started as the timestamp to query for changed entities, then use it in your Change Event process to get all changes since that timestamp so no updates are missed. \n* The entity data must be complete. When an entity is sent to the API, it's treated as an UPSERT operation - the old version of the entity is replaced with the new version.\n\n## Data Model Overview\n### Entity types\n#### Candidate\nA person seeking a job. \n\n#### Placement\nA job that has been filled by a Candidate.\n\n#### InternalUser  \nAn internal person at your organization.\n\n#### JobOrder\nA job to be filled by a Candidate.\n\n#### Company  \nA company that is a client of your organization.\n\n#### ClientContact\nA contact person at a Company.  \n\n#### Appointment\nAn interview or a meeting with a Candidate or Contact.\n\n#### Submission\nSending a Candidate’s info for additional review.\n\n#### Certification\nThe credential and or certificate of Candidate, or as required by a Job.\n\n#### Lead\nA new prospective client or contact\n\n&nbsp;\n\n### Field types\n#### id\nPrimary key of the entity. **This represents the ID in your system and is not managed by Sense.** All ids are treated as strings.\n* Nullable: True\n* Examples\n    - Candidate Entity: `{ \"id\": \"123\", \"first_name\": \"Linus\", ... }`\n\n#### int, float, string\n* Nullable: True\n* Examples\n    - `1, 1.0, \"hello world\"`\n\n#### datetime \n* Nullable: True\n* Format: [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) \n* Strict Validation: If a datetime field is unable to be parsed in ISO 8601 format, the update is rejected and the API will return a 400 Bad Request.\n* Examples \n    - `2020-04-01T10:30:00+0000` is 2020-04-01 at 10:30 AM UTC. \n    - `2020-04-01T10:30:00-0700` is 2020-04-01 at 10:30 AM Pacific. \n \n#### ref  \nRepresents a primary key reference to another entity.\n* Nullable: True\n* Format: string\n* Examples:\n    - A field named \"internal_user_id\" on Placement points to an InternalUser by its primary key.\n        - Placement Entity: `{ \"id\": \"123\", \"internal_user_id\": \"456\", \"status\": \"Active\", ... }` \n        - Internal User Entity: `{ \"id\": \"456\", \"first_name\": \"Ace\" }`\n\n## Sample Code\n\n<details>\n\n<summary> Post a Candidate Entity </summary>\n\n```python\nimport requests\n\n# Obtain a Bearer token using your client credentials.\nauth_response = requests.post(\n    \"https://partner-auth.sensehq.com/oauth2/token\",\n    data={\n        \"client_id\": \"client_id\",\n        \"client_secret\": \"client_secret\",\n        \"grant_type\": \"client_credentials\",\n    },\n)\nassert auth_response.status_code == 200\nprint(\"Authenticated successfully.\")\n\n# Post a Candidate entity.\nbearer_token = auth_response.json()[\"access_token\"]\nresponse = requests.post(\n    \"https://partner-api.sensehq.com/v1/candidates\",\n    json=[{\n        \"id\": \"123\",\n        \"first_name\": \"Linus\",\n        \"last_name\": \"Kerns\",\n        \"email\": \"linus@sensehq.com\",\n        \"mobile_phone\": \"(415) 555-1234\",\n        \"status\": \"Active\",\n    }],\n    headers={\"Authorization\": f\"Bearer {bearer_token}\"},\n)\nassert response.status_code == 201\nprint(\"Posted Candidate successfully.\")\n```\n\n</details>\n&nbsp;\n<details>\n\n<summary> Update a Candidate Entity </summary>\n\n```python\nimport requests\n\n# Obtain a Bearer token using your client credentials.\nauth_response = requests.post(\n    \"https://partner-auth.sensehq.com/oauth2/token\",\n    data={\n        \"client_id\": \"client_id\",\n        \"client_secret\": \"client_secret\",\n        \"grant_type\": \"client_credentials\",\n    },\n)\nassert auth_response.status_code == 200\nprint(\"Authenticated successfully.\")\n\n# Update a Candidate entity.\nbearer_token = auth_response.json()[\"access_token\"]\nresource_id = 123\nresponse = requests.patch(\n    f\"https://partner-api.sensehq.com/v1/candidates/{resource_id}\",\n    json={\n        \"status\": \"InActive\",\n    },\n    headers={\"Authorization\": f\"Bearer {bearer_token}\"},\n)\nassert response.status_code == 201\nprint(\"Updated Candidate successfully.\")\n```\n</details>\n&nbsp;\n<details>\n<summary> Fetch a Candidate Entity </summary>\n\n```python\nimport requests\n\n# Obtain a Bearer token using your client credentials.\nauth_response = requests.post(\n    \"https://partner-auth.sensehq.com/oauth2/token\",\n    data={\n        \"client_id\": \"client_id\",\n        \"client_secret\": \"client_secret\",\n        \"grant_type\": \"client_credentials\",\n    },\n)\nassert auth_response.status_code == 200\nprint(\"Authenticated successfully.\")\n\n# Get a Candidate entity.\nbearer_token = auth_response.json()[\"access_token\"]\nresource_id = 123\n\nget_api_response = requests.get(f\"https://partner-api.sensehq.com/v1/candidates/{resource_id}\",\n    headers={\"Authorization\": f\"Bearer {bearer_token}\"},)\n\nassert get_api_response.status_code == 200\nprint(f\"Fetched candidate successfully\")\n```\n\n</details>\n\n## Changelog\n\nAll notable changes to the Sense API and Write-back API specifications are listed here, newest first.\n\n### Sense API\n\n#### 2026-04-02\n- Added [`POST /v1/candidates/{id}/resume`](#tag/Candidate/operation/post_candidates_resume) for uploading candidate resumes as `multipart/form-data`. Required fields: `file`, `resume_id`, `file_extension`, `date_updated`, `date_created`. Supported formats: `pdf`, `doc`, `docx`, `txt`, `rtf`, `odt`, `html`, `htm`. Maximum file size: 4 MB.\n\n#### 2026-02-05\n- Added [`GET /v1/{entity}/possible-values/{fieldName}`](#tag/Candidate/operation/get_candidates_possible_values) to retrieve configured dropdown values for a given field.\n- Added [`PUT /v1/{entity}/possible-values/{fieldName}`](#tag/Candidate/operation/put_candidates_possible_values) to set dropdown values for a given field. Accepts an array of `{ \"label\": string, \"value\": string | number | boolean }` objects.\n\n#### 2025-05-21\n- **Token caching required:** Access tokens must be cached and reused until expiry. Read the `expires_in` field from the token response to determine the token lifetime — do not hardcode a fixed duration. Unnecessary token requests may result in rate limiting or access deactivation.\n\n#### 2025-02-19\n- Added [`GET /v1/{entity}/{id}`](#tag/Candidate/operation/get_candidates) to fetch a single entity by ID. Returns the full entity object.\n- Added [`PATCH /v1/{entity}/{id}`](#tag/Candidate/operation/patch_candidates) for partial updates. Only fields present in the request body are updated; omitted fields retain their current values. Unlike `POST`, the full entity is not replaced.\n\n#### 2024-07-25\n- Added `custom_array` field type across all entity types. Accepts an array of strings (e.g., `[\"value1\", \"value2\"]`).\n\n#### 2023-11-16\n- Added `application_id` (string) to the Candidate entity.\n- Added `custom_text16` through `custom_text34` to expand the available custom text fields.\n\n#### 2023-06-12\n- Added `Lead`, `Certification`, and `Appointment` as supported entity types. When syncing, send them after `Placement` in dependency order: `leads` → `certifications` → `appointments`.\n\n#### 2023-03-15\n- **Behavioral change:** Payloads containing unknown or invalid fields now return `400 Bad Request` with field-level error details. Previously, unrecognized fields were silently ignored.\n\n#### 2023-02-21\n- Added `datetime` field support to the Submission entity. Datetime values must be in ISO 8601 format.\n\n---\n\n### Write-back API\n\n#### 2025-11-18\n- SMS and WhatsApp note write-backs sent via Messaging workflows now support configuring the recipient entity type (e.g., Candidate vs. Client Contact) and note action type (sent vs. reply). Disabled by default; must be enabled per agency.\n\n#### 2022-11-30\n- **Breaking change:** Renamed write-back types: `OBJECT_CREATE` → `ENTITY_CREATE`, `OBJECT_UPDATE` → `ENTITY_UPDATE`, `OBJECT_DELETE` → `ENTITY_DELETE`. Update your handler to match the new `type` values.\n- Renamed `object_type` to `entity_type` in the `ENTITY_CREATE` payload.\n- `ENTITY_CREATE` responses must now include `entity_id` (the ID of the newly created entity) in addition to `id`.\n\n#### 2022-10-21\n- Added `ENTITY_CREATE`, `ENTITY_UPDATE`, and `ENTITY_DELETE` write-back types for tracking entity-level changes. See Data Structures for payload schemas.\n- Removed `FIELD_UPDATE` type.\n\n#### 2022-02-11\n- **Breaking change:** Renamed `CHATBOT_CONVERSATION` to `CHATBOT_RESPONSE_SUMMARY`. Update your handler to match the new `type` value.\n- Added `is_broadcast` (boolean) to `SMSObject`.\n- Renamed `entity` to `sender` in `ConversationObject`.\n- Added `subject: EntityObject` to the Chatbot Conversation payload.\n\n#### 2021-07-21\n- Added `MESSAGING_DIGEST`, `CHATBOT_CONVERSATION`, `FIELD_UPDATE`, and `GENERIC_EVENT` write-back types.\n- Added `FieldUpdateObject` data structure.\n\n#### 2021-07-16\n- **Breaking change:** Renamed response ID field from `note_id` to `id`. Update your handler to read from `id`."
+  title: Sense Appointment API
+  version: ''
+servers:
+- url: https://partner-api.us-stage.sensehq.co
+security:
+- sense_bearer_auth: []
+tags:
+- description: An interview or a meeting with a Candidate or Contact.
+  name: Appointment
+paths:
+  /appointments:
+    post:
+      description: Batch upsert Appointment entities.
+      operationId: post_appointments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/Appointment'
+              maxItems: 500
+              minItems: 1
+              type: array
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/201_response_schema'
+          description: Request accepted for async processing.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400_response_schema'
+          description: Invalid request. Message will indicate which field failed validation.
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400_response_schema'
+          description: Payload too large
+      summary: Upsert Appointment
+      tags:
+      - Appointment
+  /appointments/{id}:
+    get:
+      description: Fetch details of a single Appointment entity by its unique ID.
+      operationId: get_appointments
+      parameters:
+      - description: The unique ID of the Appointment whose details need to be retrieved.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200_response_schema'
+          description: Successful response containing Appointment details.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200_response_schema'
+          description: Invalid request. Message will indicate which field failed validation.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200_response_schema'
+          description: Appointment not found.
+      summary: Retrieve Appointment details
+      tags:
+      - Appointment
+    patch:
+      description: Update single Appointment entity.
+      operationId: patch_appointments
+      parameters:
+      - description: The unique id of the Appointmentwhose details need to be updated.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Appointment'
+              type: object
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/201_response_schema'
+          description: Request accepted for async processing.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400_response_schema'
+          description: Invalid request. Message will indicate which field failed validation.
+        '413':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400_response_schema'
+          description: Payload too large
+      summary: Update Appointment
+      tags:
+      - Appointment
+  /appointments/possible-values/{fieldName}:
+    get:
+      description: Fetch the list of possible values configured for a field on the Appointment entity. These values define dropdown options used in various Sense workflows.
+      operationId: get_appointments_possible_values
+      parameters:
+      - description: The field name for which possible values should be retrieved.
+        in: path
+        name: fieldName
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PossibleValuesGetResponse'
+          description: Successful response containing possible values.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400_response_schema'
+          description: Invalid request.
+      summary: Get possible values for a Appointment field
+      tags:
+      - Appointment
+    put:
+      description: A self-serve endpoint to synchronize dropdown options with your ATS configuration, ensuring data integrity during field writebacks.
+      operationId: put_appointments_possible_values
+      parameters:
+      - description: The field name whose possible values should be updated.
+        in: path
+        name: fieldName
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            example:
+            - label: Hourly
+              value: hourly
+            - label: Daily
+              value: daily
+            schema:
+              items:
+                properties:
+                  label:
+                    type: string
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: number
+                    - type: boolean
+                required:
+                - label
+                - value
+                type: object
+              type: array
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PossibleValuesPutResponse'
+          description: Updated possible values returned in the response.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400_response_schema'
+          description: Invalid request payload.
+      summary: Update possible values for a Appointment field
+      tags:
+      - Appointment
+components:
+  schemas:
+    PossibleValuesGetResponse:
+      properties:
+        data:
+          properties:
+            field_name:
+              description: The field name whose possible values are being returned
+              type: string
+            object_name:
+              description: The object name for which possible values are configured
+              type: string
+            values:
+              description: List of configured possible values, or null if none are set
+              items:
+                properties:
+                  associationValue:
+                    description: Optional association value if configured
+                    type:
+                    - string
+                    - 'null'
+                  label:
+                    type: string
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: number
+                    - type: boolean
+                required:
+                - label
+                - value
+                type: object
+              type:
+              - array
+              - 'null'
+          type: object
+        resource_id:
+          description: The field name used in the request path
+          type: string
+      type: object
+    Appointment:
+      properties:
+        application_id:
+          type:
+          - string
+          - 'null'
+        candidate_id:
+          type:
+          - string
+          - 'null'
+        client_contact_id:
+          type:
+          - string
+          - 'null'
+        communication_method:
+          type:
+          - string
+          - 'null'
+        custom_array1:
+          items:
+            type: string
+          type:
+          - array
+          - 'null'
+        custom_array2:
+          items:
+            type: string
+          type:
+          - array
+          - 'null'
+        custom_array3:
+          items:
+            type: string
+          type:
+          - array
+          - 'null'
+        custom_array4:
+          items:
+            type: string
+          type:
+          - array
+          - 'null'
+        custom_array5:
+          items:
+            type: string
+          type:
+          - array
+          - 'null'
+        custom_date1:
+          format: date
+          type:
+          - string
+          - 'null'
+        custom_date2:
+          format: date
+          type:
+          - string
+          - 'null'
+        custom_date3:
+          format: date
+          type:
+          - string
+          - 'null'
+        custom_date4:
+          format: date
+          type:
+          - string
+          - 'null'
+        custom_date5:
+          format: date
+          type:
+          - string
+          - 'null'
+        custom_date6:
+          format: date
+          type:
+          - string
+          - 'null'
+        custom_datetime1:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        custom_datetime2:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        custom_datetime3:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        custom_datetime4:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        custom_datetime5:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        custom_datetime6:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        custom_float1:
+          type:
+          - number
+          - 'null'
+        custom_float2:
+          type:
+          - number
+          - 'null'
+        custom_float3:
+          type:
+          - number
+          - 'null'
+        custom_float4:
+          type:
+          - number
+          - 'null'
+        custom_float5:
+          type:
+          - number
+          - 'null'
+        custom_float6:
+          type:
+          - number
+          - 'null'
+        custom_integer1:
+          type:
+          - integer
+          - 'null'
+        custom_integer2:
+          type:
+          - integer
+          - 'null'
+        custom_integer3:
+          type:
+          - integer
+          - 'null'
+        custom_integer4:
+          type:
+          - integer
+          - 'null'
+        custom_integer5:
+          type:
+          - integer
+          - 'null'
+        custom_integer6:
+          type:
+          - integer
+          - 'null'
+        custom_text1:
+          type:
+          - string
+          - 'null'
+        custom_text10:
+          type:
+          - string
+          - 'null'
+        custom_text11:
+          type:
+          - string
+          - 'null'
+        custom_text12:
+          type:
+          - string
+          - 'null'
+        custom_text13:
+          type:
+          - string
+          - 'null'
+        custom_text14:
+          type:
+          - string
+          - 'null'
+        custom_text15:
+          type:
+          - string
+          - 'null'
+        custom_text16:
+          type:
+          - string
+          - 'null'
+        custom_text17:
+          type:
+          - string
+          - 'null'
+        custom_text18:
+          type:
+          - string
+          - 'null'
+        custom_text19:
+          type:
+          - string
+          - 'null'
+        custom_text2:
+          type:
+          - string
+          - 'null'
+        custom_text20:
+          type:
+          - string
+          - 'null'
+        custom_text21:
+          type:
+          - string
+          - 'null'
+        custom_text22:
+          type:
+          - string
+          - 'null'
+        custom_text23:
+          type:
+          - string
+          - 'null'
+        custom_text24:
+          type:
+          - string
+          - 'null'
+        custom_text25:
+          type:
+          - string
+          - 'null'
+        custom_text26:
+          type:
+          - string
+          - 'null'
+        custom_text27:
+          type:
+          - string
+          - 'null'
+        custom_text28:
+          type:
+          - string
+          - 'null'
+        custom_text29:
+          type:
+          - string
+          - 'null'
+        custom_text3:
+          type:
+          - string
+          - 'null'
+        custom_text30:
+          type:
+          - string
+          - 'null'
+        custom_text31:
+          type:
+          - string
+          - 'null'
+        custom_text32:
+          type:
+          - string
+          - 'null'
+        custom_text33:
+          type:
+          - string
+          - 'null'
+        custom_text34:
+          type:
+          - string
+          - 'null'
+        custom_text35:
+          type:
+          - string
+          - 'null'
+        custom_text36:
+          type:
+          - string
+          - 'null'
+        custom_text37:
+          type:
+          - string
+          - 'null'
+        custom_text38:
+          type:
+          - string
+          - 'null'
+        custom_text39:
+          type:
+          - string
+          - 'null'
+        custom_text4:
+          type:
+          - string
+          - 'null'
+        custom_text40:
+          type:
+          - string
+          - 'null'
+        custom_text41:
+          type:
+          - string
+          - 'null'
+        custom_text42:
+          type:
+          - string
+          - 'null'
+        custom_text43:
+          type:
+          - string
+          - 'null'
+        custom_text44:
+          type:
+          - string
+          - 'null'
+        custom_text45:
+          type:
+          - string
+          - 'null'
+        custom_text46:
+          type:
+          - string
+          - 'null'
+        custom_text47:
+          type:
+          - string
+          - 'null'
+        custom_text48:
+          type:
+          - string
+          - 'null'
+        custom_text49:
+          type:
+          - string
+          - 'null'
+        custom_text5:
+          type:
+          - string
+          - 'null'
+        custom_text50:
+          type:
+          - string
+          - 'null'
+        custom_text6:
+          type:
+          - string
+          - 'null'
+        custom_text7:
+          type:
+          - string
+          - 'null'
+        custom_text8:
+          type:
+          - string
+          - 'null'
+        custom_text9:
+          type:
+          - string
+          - 'null'
+        custom_text_block1:
+          type:
+          - string
+          - 'null'
+        custom_text_block2:
+          type:
+          - string
+          - 'null'
+        custom_text_block3:
+          type:
+          - string
+          - 'null'
+        custom_text_block4:
+          type:
+          - string
+          - 'null'
+        custom_text_block5:
+          type:
+          - string
+          - 'null'
+        custom_text_block6:
+          type:
+          - string
+          - 'null'
+        date_added:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        date_end:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        date_last_modified:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        date_start:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        date_task_complete:
+          format: date
+          type:
+          - string
+          - 'null'
+        date_task_due:
+          format: date-time
+          type:
+          - string
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        id:
+          minLength: 1
+          type: string
+        internal_user_id:
+          type:
+          - string
+          - 'null'
+        internal_user_id2:
+          type:
+          - string
+          - 'null'
+        internal_user_id3:
+          type:
+          - string
+          - 'null'
+        internal_user_id4:
+          type:
+          - string
+          - 'null'
+        internal_user_id5:
+          type:
+          - string
+          - 'null'
+        internal_user_id6:
+          type:
+          - string
+          - 'null'
+        is_all_day:
+          type:
+          - boolean
+          - 'null'
+        is_archived:
+          type:
+          - boolean
+          - 'null'
+        is_deleted:
+          description: A soft DELETE Operation is supported if the field `is_deleted = true`
+          type:
+          - boolean
+          - 'null'
+        is_private:
+          type:
+          - boolean
+          - 'null'
+        is_task:
+          type:
+          - boolean
+          - 'null'
+        job_order_id:
+          type:
+          - string
+          - 'null'
+        location:
+          type:
+          - string
+          - 'null'
+        owner_id:
+          type:
+          - string
+          - 'null'
+        placement_id:
+          type:
+          - string
+          - 'null'
+        subject:
+          type:
+          - string
+          - 'null'
+        task_complete:
+          type:
+          - boolean
+          - 'null'
+        type:
+          type:
+          - string
+          - 'null'
+      required:
+      - id
+    200_response_schema:
+      properties:
+        data:
+          description: Contains the response entity data
+          type:
+          - object
+          - 'null'
+        errors:
+          items:
+            properties:
+              entity_id:
+                description: entity id which has validation errors if available
+                type:
+                - string
+                - 'null'
+              message:
+                description: description of validation error
+                type:
+                - string
+                - 'null'
+              path:
+                description: path to the entity which has validation errors
+                items:
+                  type: string
+                type:
+                - array
+                - 'null'
+          type: array
+        resource_id:
+          description: the resource id for which data is requested
+          type: string
+    400_response_schema:
+      properties:
+        errors:
+          items:
+            properties:
+              entity_id:
+                description: entity id which has validation errors if available
+                type:
+                - string
+                - 'null'
+              message:
+                description: description of validation error
+                type:
+                - string
+                - 'null'
+              path:
+                description: path to the entity which has validation errors
+                items:
+                  type: string
+                type:
+                - array
+                - 'null'
+          type:
+          - array
+          - 'null'
+        warnings:
+          items:
+            properties:
+              entity_id:
+                description: entity id which has validation warnings if available
+                type:
+                - string
+                - 'null'
+              message:
+                description: description of validation warning
+                type:
+                - string
+                - 'null'
+              path:
+                description: path to the entity which has validation warnings
+                items:
+                  type: string
+                type:
+                - array
+                - 'null'
+          type:
+          - array
+          - 'null'
+    PossibleValuesPutResponse:
+      properties:
+        data:
+          properties:
+            field_name:
+              type: string
+            object_name:
+              type: string
+            possibleValues:
+              items:
+                properties:
+                  label:
+                    type: string
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: number
+                    - type: boolean
+                required:
+                - label
+                - value
+                type: object
+              type: array
+            updated:
+              type: boolean
+          type: object
+        resource_id:
+          type: string
+      type: object
+    201_response_schema:
+      properties:
+        message:
+          type:
+          - string
+          - 'null'
+        request_id:
+          description: UUID reference for the submitted request
+          type: string
+  securitySchemes:
+    sense_authentication:
+      flows:
+        clientCredentials:
+          scopes:
+            N/A: The Sense API does not require a scope to be provided.
+          tokenUrl: https://partner-auth.us-stage.sensehq.co/oauth2/token
+      type: oauth2
+    sense_bearer_auth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
