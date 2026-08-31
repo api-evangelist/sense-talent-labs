@@ -41,6 +41,19 @@ tags:
 - Messaging
 - Interview Scheduling
 - Artificial Intelligence
+- Software-as-a-Service
+tags_raw:
+- Human Resources
+- Recruiting
+- Talent Acquisition
+- Staffing
+- Applicant Tracking
+- Candidate Engagement
+- Recruiting Automation
+- Talent CRM
+- Messaging
+- Interview Scheduling
+- Artificial Intelligence
 - SaaS
 apis:
 - aid: sense-talent-labs:sense-talent-labs-appointment-api
@@ -145,6 +158,8 @@ apis:
   humanURL: https://developer.sensehq.com/
   baseURL: https://partner-api.sensehq.com/v1
   tags:
+  - Client Contact
+  tags_raw:
   - ClientContact
   properties:
   - type: OpenAPI
@@ -193,6 +208,8 @@ apis:
   humanURL: https://developer.sensehq.com/
   baseURL: https://partner-api.sensehq.com/v1
   tags:
+  - internaluser
+  tags_raw:
   - InternalUser
   properties:
   - type: OpenAPI
