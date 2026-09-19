@@ -249,6 +249,8 @@ apis:
   humanURL: https://developer.sensehq.com/
   baseURL: https://partner-api.sensehq.com/v1
   tags:
+  - Leads
+  tags_raw:
   - Lead
   properties:
   - type: OpenAPI
