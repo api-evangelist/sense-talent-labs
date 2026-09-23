@@ -1,0 +1,45 @@
+{
+  "provider": "sense-talent-labs",
+  "sources": [
+    "_original/sense-talent-labs-sense-api-openapi.json"
+  ],
+  "outputs": [
+    "sense-talent-labs-appointment-api-openapi.yml",
+    "sense-talent-labs-authentication-api-openapi.yml",
+    "sense-talent-labs-candidate-api-openapi.yml",
+    "sense-talent-labs-certification-api-openapi.yml",
+    "sense-talent-labs-clientcontact-api-openapi.yml",
+    "sense-talent-labs-company-api-openapi.yml",
+    "sense-talent-labs-internaluser-api-openapi.yml",
+    "sense-talent-labs-joborder-api-openapi.yml",
+    "sense-talent-labs-lead-api-openapi.yml",
+    "sense-talent-labs-placement-api-openapi.yml",
+    "sense-talent-labs-submission-api-openapi.yml"
+  ],
+  "archived": [
+    "deleted 1 superseded output(s) from the previous generation"
+  ],
+  "errors": [],
+  "warnings": [
+    "sense-talent-labs-sense-api-openapi.json: info.version missing"
+  ],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "sense-talent-labs-sense-api-openapi.json: upgraded openapi 3.0.2 -> OpenAPI 3.2.0",
+    "superseded outputs removed: sense-talent-labs-client-contact-api-openapi.yml",
+    "apis.yml register: written (+1 apis, 11 total)"
+  ],
+  "skipped": [
+    "sense-talent-labs-appointment-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "sense-talent-labs-authentication-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "sense-talent-labs-candidate-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "sense-talent-labs-certification-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "sense-talent-labs-client-contact-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "sense-talent-labs-company-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "sense-talent-labs-internaluser-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "sense-talent-labs-joborder-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "sense-talent-labs-lead-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "sense-talent-labs-placement-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "sense-talent-labs-submission-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

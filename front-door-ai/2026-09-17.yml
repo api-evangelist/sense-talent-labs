@@ -1,0 +1,27 @@
+# Front Door AI Index — sense-talent-labs — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: sense-talent-labs
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.sensehq.com
+  final_host: www.sensehq.com
+  ownership: own
+  owner: sense-talent-labs
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 39
+  host_score: 39
+  density: 19.7
+  words: 1980
+  tiers:
+    agentic: 2
+    core: 37
+    model: 0
+  ambiguous: 14
+  top_terms:
+    AI: 37
+    automation: 14
+    chatbot: 2
