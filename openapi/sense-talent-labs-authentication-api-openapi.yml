@@ -40,14 +40,6 @@ paths:
       - Authentication
 components:
   schemas:
-    sense_authentication_response:
-      properties:
-        access_token:
-          type: string
-        expires_in:
-          type: number
-        token_type:
-          type: string
     sense_authentication_request:
       properties:
         client_id:
@@ -55,6 +47,14 @@ components:
         client_secret:
           type: string
         grant_type:
+          type: string
+    sense_authentication_response:
+      properties:
+        access_token:
+          type: string
+        expires_in:
+          type: number
+        token_type:
           type: string
   securitySchemes:
     sense_authentication:
