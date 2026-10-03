@@ -200,54 +200,15 @@ paths:
       - Placement
 components:
   schemas:
-    400_response_schema:
+    201_response_schema:
       properties:
-        errors:
-          items:
-            properties:
-              entity_id:
-                description: entity id which has validation errors if available
-                type:
-                - string
-                - 'null'
-              message:
-                description: description of validation error
-                type:
-                - string
-                - 'null'
-              path:
-                description: path to the entity which has validation errors
-                items:
-                  type: string
-                type:
-                - array
-                - 'null'
+        message:
           type:
-          - array
+          - string
           - 'null'
-        warnings:
-          items:
-            properties:
-              entity_id:
-                description: entity id which has validation warnings if available
-                type:
-                - string
-                - 'null'
-              message:
-                description: description of validation warning
-                type:
-                - string
-                - 'null'
-              path:
-                description: path to the entity which has validation warnings
-                items:
-                  type: string
-                type:
-                - array
-                - 'null'
-          type:
-          - array
-          - 'null'
+        request_id:
+          description: UUID reference for the submitted request
+          type: string
     200_response_schema:
       properties:
         data:
@@ -308,6 +269,54 @@ components:
         resource_id:
           type: string
       type: object
+    400_response_schema:
+      properties:
+        errors:
+          items:
+            properties:
+              entity_id:
+                description: entity id which has validation errors if available
+                type:
+                - string
+                - 'null'
+              message:
+                description: description of validation error
+                type:
+                - string
+                - 'null'
+              path:
+                description: path to the entity which has validation errors
+                items:
+                  type: string
+                type:
+                - array
+                - 'null'
+          type:
+          - array
+          - 'null'
+        warnings:
+          items:
+            properties:
+              entity_id:
+                description: entity id which has validation warnings if available
+                type:
+                - string
+                - 'null'
+              message:
+                description: description of validation warning
+                type:
+                - string
+                - 'null'
+              path:
+                description: path to the entity which has validation warnings
+                items:
+                  type: string
+                type:
+                - array
+                - 'null'
+          type:
+          - array
+          - 'null'
     Placement:
       properties:
         bill_rate:
@@ -1057,15 +1066,6 @@ components:
           description: The field name used in the request path
           type: string
       type: object
-    201_response_schema:
-      properties:
-        message:
-          type:
-          - string
-          - 'null'
-        request_id:
-          description: UUID reference for the submitted request
-          type: string
   securitySchemes:
     sense_authentication:
       flows:

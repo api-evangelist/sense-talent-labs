@@ -297,84 +297,14 @@ paths:
       - Candidate
 components:
   schemas:
-    400_response_schema:
+    201_response_schema:
       properties:
-        errors:
-          items:
-            properties:
-              entity_id:
-                description: entity id which has validation errors if available
-                type:
-                - string
-                - 'null'
-              message:
-                description: description of validation error
-                type:
-                - string
-                - 'null'
-              path:
-                description: path to the entity which has validation errors
-                items:
-                  type: string
-                type:
-                - array
-                - 'null'
+        message:
           type:
-          - array
+          - string
           - 'null'
-        warnings:
-          items:
-            properties:
-              entity_id:
-                description: entity id which has validation warnings if available
-                type:
-                - string
-                - 'null'
-              message:
-                description: description of validation warning
-                type:
-                - string
-                - 'null'
-              path:
-                description: path to the entity which has validation warnings
-                items:
-                  type: string
-                type:
-                - array
-                - 'null'
-          type:
-          - array
-          - 'null'
-    200_response_schema:
-      properties:
-        data:
-          description: Contains the response entity data
-          type:
-          - object
-          - 'null'
-        errors:
-          items:
-            properties:
-              entity_id:
-                description: entity id which has validation errors if available
-                type:
-                - string
-                - 'null'
-              message:
-                description: description of validation error
-                type:
-                - string
-                - 'null'
-              path:
-                description: path to the entity which has validation errors
-                items:
-                  type: string
-                type:
-                - array
-                - 'null'
-          type: array
-        resource_id:
-          description: the resource id for which data is requested
+        request_id:
+          description: UUID reference for the submitted request
           type: string
     PossibleValuesPutResponse:
       properties:
@@ -1229,6 +1159,54 @@ components:
           - 'null'
       required:
       - id
+    400_response_schema:
+      properties:
+        errors:
+          items:
+            properties:
+              entity_id:
+                description: entity id which has validation errors if available
+                type:
+                - string
+                - 'null'
+              message:
+                description: description of validation error
+                type:
+                - string
+                - 'null'
+              path:
+                description: path to the entity which has validation errors
+                items:
+                  type: string
+                type:
+                - array
+                - 'null'
+          type:
+          - array
+          - 'null'
+        warnings:
+          items:
+            properties:
+              entity_id:
+                description: entity id which has validation warnings if available
+                type:
+                - string
+                - 'null'
+              message:
+                description: description of validation warning
+                type:
+                - string
+                - 'null'
+              path:
+                description: path to the entity which has validation warnings
+                items:
+                  type: string
+                type:
+                - array
+                - 'null'
+          type:
+          - array
+          - 'null'
     ResumeUploadResponse:
       properties:
         message:
@@ -1238,6 +1216,37 @@ components:
           description: Status message indicating the request was received.
           type: string
       type: object
+    200_response_schema:
+      properties:
+        data:
+          description: Contains the response entity data
+          type:
+          - object
+          - 'null'
+        errors:
+          items:
+            properties:
+              entity_id:
+                description: entity id which has validation errors if available
+                type:
+                - string
+                - 'null'
+              message:
+                description: description of validation error
+                type:
+                - string
+                - 'null'
+              path:
+                description: path to the entity which has validation errors
+                items:
+                  type: string
+                type:
+                - array
+                - 'null'
+          type: array
+        resource_id:
+          description: the resource id for which data is requested
+          type: string
     PossibleValuesGetResponse:
       properties:
         data:
@@ -1276,15 +1285,6 @@ components:
           description: The field name used in the request path
           type: string
       type: object
-    201_response_schema:
-      properties:
-        message:
-          type:
-          - string
-          - 'null'
-        request_id:
-          description: UUID reference for the submitted request
-          type: string
   securitySchemes:
     sense_authentication:
       flows:
