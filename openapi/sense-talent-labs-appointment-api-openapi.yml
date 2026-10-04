@@ -209,6 +209,44 @@ components:
         request_id:
           description: UUID reference for the submitted request
           type: string
+    PossibleValuesGetResponse:
+      properties:
+        data:
+          properties:
+            field_name:
+              description: The field name whose possible values are being returned
+              type: string
+            object_name:
+              description: The object name for which possible values are configured
+              type: string
+            values:
+              description: List of configured possible values, or null if none are set
+              items:
+                properties:
+                  associationValue:
+                    description: Optional association value if configured
+                    type:
+                    - string
+                    - 'null'
+                  label:
+                    type: string
+                  value:
+                    oneOf:
+                    - type: string
+                    - type: number
+                    - type: boolean
+                required:
+                - label
+                - value
+                type: object
+              type:
+              - array
+              - 'null'
+          type: object
+        resource_id:
+          description: The field name used in the request path
+          type: string
+      type: object
     PossibleValuesPutResponse:
       properties:
         data:
@@ -238,54 +276,6 @@ components:
         resource_id:
           type: string
       type: object
-    400_response_schema:
-      properties:
-        errors:
-          items:
-            properties:
-              entity_id:
-                description: entity id which has validation errors if available
-                type:
-                - string
-                - 'null'
-              message:
-                description: description of validation error
-                type:
-                - string
-                - 'null'
-              path:
-                description: path to the entity which has validation errors
-                items:
-                  type: string
-                type:
-                - array
-                - 'null'
-          type:
-          - array
-          - 'null'
-        warnings:
-          items:
-            properties:
-              entity_id:
-                description: entity id which has validation warnings if available
-                type:
-                - string
-                - 'null'
-              message:
-                description: description of validation warning
-                type:
-                - string
-                - 'null'
-              path:
-                description: path to the entity which has validation warnings
-                items:
-                  type: string
-                type:
-                - array
-                - 'null'
-          type:
-          - array
-          - 'null'
     Appointment:
       properties:
         application_id:
@@ -778,6 +768,54 @@ components:
           - 'null'
       required:
       - id
+    400_response_schema:
+      properties:
+        errors:
+          items:
+            properties:
+              entity_id:
+                description: entity id which has validation errors if available
+                type:
+                - string
+                - 'null'
+              message:
+                description: description of validation error
+                type:
+                - string
+                - 'null'
+              path:
+                description: path to the entity which has validation errors
+                items:
+                  type: string
+                type:
+                - array
+                - 'null'
+          type:
+          - array
+          - 'null'
+        warnings:
+          items:
+            properties:
+              entity_id:
+                description: entity id which has validation warnings if available
+                type:
+                - string
+                - 'null'
+              message:
+                description: description of validation warning
+                type:
+                - string
+                - 'null'
+              path:
+                description: path to the entity which has validation warnings
+                items:
+                  type: string
+                type:
+                - array
+                - 'null'
+          type:
+          - array
+          - 'null'
     200_response_schema:
       properties:
         data:
@@ -809,44 +847,6 @@ components:
         resource_id:
           description: the resource id for which data is requested
           type: string
-    PossibleValuesGetResponse:
-      properties:
-        data:
-          properties:
-            field_name:
-              description: The field name whose possible values are being returned
-              type: string
-            object_name:
-              description: The object name for which possible values are configured
-              type: string
-            values:
-              description: List of configured possible values, or null if none are set
-              items:
-                properties:
-                  associationValue:
-                    description: Optional association value if configured
-                    type:
-                    - string
-                    - 'null'
-                  label:
-                    type: string
-                  value:
-                    oneOf:
-                    - type: string
-                    - type: number
-                    - type: boolean
-                required:
-                - label
-                - value
-                type: object
-              type:
-              - array
-              - 'null'
-          type: object
-        resource_id:
-          description: The field name used in the request path
-          type: string
-      type: object
   securitySchemes:
     sense_authentication:
       flows:
