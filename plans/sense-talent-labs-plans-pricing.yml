@@ -74,3 +74,46 @@ observations: 'Sense publishes real floor prices, which is more than most enterp
   enterprise talent-acquisition platform. What is not published is anything an integrator can size
   against: no seat counts, no message or record volumes, no overage rate, and no statement of what
   changes between the $2,000 staffing tier and the identically priced enterprise staffing tier.'
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - hybrid
+  units: []
+  plans:
+  - name: Sense Platform for Talent Acquisition
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods: []
+  - name: Sense Platform for Staffing Teams
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods: []
+  - name: Sense Platform for Enterprise Staffing
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods: []
+  - name: Sense AI Recruiter
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods: []
+  - name: Sense SMS/WhatsApp Messaging
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods: []
+  - name: Sense Interview Scheduling
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods: []
